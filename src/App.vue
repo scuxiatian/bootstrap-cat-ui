@@ -4,5 +4,14 @@
   </div>
 </template>
 
-<style lang="less">
+<style>
+.page-container {
+  margin: 20px;
+}
+.page-title, .page-desc {
+  margin: 20px 0;
+}
+.show-title {
+  margin: 20px 0;
+}
 </style>

@@ -1,10 +1,10 @@
 <template>
   <cat-row class="home" :gutter="10">
-    <cat-col :span="1">
+    <cat-col :span="2">
       <ul class="nav flex-column">
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <router-link class="nav-link active" to="/test">Test</router-link>
-        </li>
+        </li> -->
         <li class="nav-item" v-for="route in routes" :key="route.name">
           <router-link class="nav-link" :to="route.path">{{ route.meta.title }}</router-link>
         </li>

@@ -16,12 +16,8 @@ export default {
     // 栅格排列顺序
     order: Number,
     // 栅格垂直对齐方式
-    align: {
-      type: String,
-      default: 'start'
-    },
+    align: String,
     // 响应式布局
-    xs: [Number, Object],
     sm: [Number, Object],
     md: [Number, Object],
     lg: [Number, Object],
@@ -59,9 +55,11 @@ export default {
         classes.push(`order-${this.order}`)
       }
       // 垂直对齐
-      classes.push(`align-self-${this.align}`)
+      if (this.align) {
+        classes.push(`align-self-${this.align}`)
+      }
       // 响应式布局
-      const renderProps = ['xs', 'sm', 'md', 'lg', 'xl']
+      const renderProps = ['sm', 'md', 'lg', 'xl']
       renderProps.forEach(size => {
         // 值为数字表示栅格所占列数
         if (typeof this[size] === 'number') {
