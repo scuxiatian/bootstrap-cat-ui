@@ -1,11 +1,11 @@
 <template>
   <div class="icon-container">
     <span class="inline-icon">
-      <icon name="edit"></icon>
-      <icon name="share-alt"></icon>
-      <icon name="trash-o"></icon>
+      <i class="fa fa-edit"></i>
+      <i class="fa fa-share-alt"></i>
+      <i class="fa fa-trash-o"></i>
     </span>
-    <cat-button type="primary"><icon name="search"></icon> 搜索</cat-button>
+    <cat-button type="primary" icon="search">搜索</cat-button>
   </div>
 </template>
 
@@ -16,7 +16,7 @@ export default {
 </script>
 
 <style scoped>
-.inline-icon .icon {
+.inline-icon .fa {
   margin: 5px 40px 5px 0;
 }
 .icon-container {

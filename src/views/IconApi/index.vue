@@ -9,7 +9,7 @@
     <cat-row>
       <cat-col v-for="iconName in awesomeIcons" :key="iconName" :span="2">
         <div class="content text-center">
-          <icon :name="iconName"></icon>
+          <i :class="getIconClass(iconName)"></i>
           <div class="icon-name">{{ iconName }}</div>
         </div>
       </cat-col>
@@ -31,10 +31,15 @@ export default {
     return {
       iconConfig: {
         title: '使用方法',
-        desc: '通过设置属性 name 来使用即可。例如：',
+        desc: '直接通过设置类名为 fa fa-iconName 来使用即可。例如：',
         code: code.useCode
       },
       awesomeIcons
+    }
+  },
+  methods: {
+    getIconClass (iconName) {
+      return `fa fa-${iconName}`
     }
   }
 }
