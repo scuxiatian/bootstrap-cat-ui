@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <h2 class="page-title">栅格布局</h2>
+    <h2 class="page-title">Layout 栅格布局</h2>
     <h6 class="page-desc">通过基础的 12 分栏，迅速简便地创建布局。</h6>
     <show-box :config="layoutBaseConfig">
       <layout-base></layout-base>

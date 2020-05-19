@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
-    <h2 class="page-title">图标</h2>
-    <h6 class="page-desc">提供了一套常用的图标集合。</h6>
+    <h2 class="page-title">Icon 图标</h2>
+    <h6 class="page-desc">提供了 awesome-font 图标集合。</h6>
     <show-box :config="iconConfig">
       <icon-use></icon-use>
     </show-box>

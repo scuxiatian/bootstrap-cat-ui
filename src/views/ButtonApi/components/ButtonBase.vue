@@ -25,7 +25,7 @@
 
 <style scoped>
   .cat-button {
-    margin-left: 5px;
+    margin-right: 5px;
   }
   .button-row {
     margin: 10px;

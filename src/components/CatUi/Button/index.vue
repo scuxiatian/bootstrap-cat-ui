@@ -1,6 +1,6 @@
 <template>
   <button class="cat-button btn" :type="nativeType" :autofocus="autofocus" :class="buttonClass" :disabled="disabled">
-    <i v-if="icon" :class="`fa fa-${icon}`"></i>
+    <i v-if="icon" :class="icon"></i>
     <span class="btn-content" :style="this.$slots.default && icon ? { 'margin-left': '5px' } : {}"><slot></slot></span>
   </button>
 </template>
@@ -14,6 +14,10 @@ export default {
       default: 'light'
     },
     plain: {
+      type: Boolean,
+      default: false
+    },
+    block: {
       type: Boolean,
       default: false
     },
@@ -36,6 +40,9 @@ export default {
       classList.push(`${prefix}-${this.type}`)
       if (this.size) {
         classList.push(`btn-${this.size}`)
+      }
+      if (this.block) {
+        classList.push('btn-block')
       }
       return classList
     }

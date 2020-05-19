@@ -22,6 +22,22 @@ const subRoutes = [
     meta: {
       title: '按钮'
     }
+  },
+  {
+    path: 'link',
+    name: 'LinkApi',
+    component: () => import('@/views/LinkApi'),
+    meta: {
+      title: '链接'
+    }
+  },
+  {
+    path: 'menu',
+    name: 'MenuApi',
+    component: () => import('@/views/MenuApi'),
+    meta: {
+      title: '导航菜单'
+    }
   }
 ]
 

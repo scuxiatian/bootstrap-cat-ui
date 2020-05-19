@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <h2 class="page-title">按钮</h2>
+    <h2 class="page-title">Button 按钮</h2>
     <h6 class="page-desc">常用的操作按钮。</h6>
     <show-box :config="buttonBaseConfig">
       <button-base></button-base>
@@ -17,8 +17,12 @@
     <show-box :config="buttonSizeConfig">
       <button-size></button-size>
     </show-box>
+    <show-box :config="buttonBlockConfig">
+      <button-block></button-block>
+    </show-box>
 
     <show-table title="Button" :data="buttonAttributes"></show-table>
+    <show-table title="ButtonGroup" :data="buttonGroupAttributes"></show-table>
   </div>
 </template>
 
@@ -28,6 +32,7 @@ import ButtonDisabled from './components/ButtonDisabled'
 import ButtonIcon from './components/ButtonIcon'
 import ButtonGroup from './components/ButtonGroup'
 import ButtonSize from './components/ButtonSize'
+import ButtonBlock from './components/ButtonBlock'
 import code from './code'
 
 export default {
@@ -37,7 +42,8 @@ export default {
     ButtonDisabled,
     ButtonIcon,
     ButtonGroup,
-    ButtonSize
+    ButtonSize,
+    ButtonBlock
   },
   data () {
     return {
@@ -51,7 +57,7 @@ export default {
         title: '禁用状态',
         desc: '按钮不可用状态。',
         code: code.disabledCode,
-        codeDesc: '你可以使用disabled属性来定义按钮是否可用，它接受一个Boolean值。'
+        codeDesc: '你可以使用 disabled 属性来定义按钮是否可用，它接受一个Boolean值。'
       },
       buttonIconConfig: {
         title: '图标按钮',
@@ -63,7 +69,7 @@ export default {
         title: '按钮组',
         desc: '以按钮组的方式出现，常用于多项类似操作。',
         code: code.groupCode,
-        codeDesc: '使用<cat-button-group>标签来嵌套你的按钮。'
+        codeDesc: '使用 <cat-button-group> 标签来嵌套你的按钮。'
       },
       buttonSizeConfig: {
         title: '不同尺寸',
@@ -71,14 +77,23 @@ export default {
         code: code.sizeCode,
         codeDesc: '额外的尺寸：lg、sm，通过设置size属性来配置它们。'
       },
+      buttonBlockConfig: {
+        title: '块级按钮',
+        desc: '按钮占满水平空间',
+        code: code.blockCode,
+        codeDesc: '你可以使用 block 属性来定义按钮是否占满水平空间，它接受一个Boolean值。'
+      },
       buttonAttributes: [
-        ['type', '类型', 'string', 'lg / sm', '—'],
-        ['size', '尺寸', 'string', 'primary / secondary / success / warning / danger / info / dark / light', 'light'],
+        ['size', '尺寸', 'string', 'lg / sm', '—'],
+        ['type', '类型', 'string', 'primary / secondary / success / warning / danger / info / dark / light', 'light'],
         ['plain', '是否朴素按钮', 'boolean', '—', 'false'],
         ['disabled', '是否禁用状态', 'boolean', '—', 'false'],
         ['icon', '图标类名', 'string', '—', '—'],
         ['autofocus', '是否默认聚焦', 'boolean', '—', 'false'],
         ['native-type', '原生 type 属性', 'string', 'button / submit / reset', 'button']
+      ],
+      buttonGroupAttributes: [
+        ['size', '尺寸', 'string', 'lg / sm', '—']
       ]
     }
   }

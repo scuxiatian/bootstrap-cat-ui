@@ -63,10 +63,10 @@ const disabledCode = `
 
 const iconCode = `
 <div>
-  <cat-button type="primary" icon="edit"></cat-button>
-  <cat-button type="primary" icon="share-alt"></cat-button>
-  <cat-button type="primary" icon="trash-o"></cat-button>
-  <cat-button type="primary" icon="search">搜索</cat-button>
+  <cat-button type="primary" icon="fa fa-edit"></cat-button>
+  <cat-button type="primary" icon="fa fa-share-alt"></cat-button>
+  <cat-button type="primary" icon="fa fa-trash-o"></cat-button>
+  <cat-button type="primary" icon="fa fa-search">搜索</cat-button>
   <cat-button type="primary">上传<i class="fa fa-upload"></i></cat-button>
 </div>
 
@@ -79,13 +79,13 @@ const iconCode = `
 const groupCode = `
 <div>
   <cat-button-group>
-    <cat-button type="primary" icon="angle-left">上一页</cat-button>
+    <cat-button type="primary" icon="fa fa-angle-left">上一页</cat-button>
     <cat-button type="primary">下一页<i class="fa fa-angle-right"></i></cat-button>
   </cat-button-group>
   <cat-button-group>
-    <cat-button type="primary" icon="edit"></cat-button>
-    <cat-button type="primary" icon="share-alt"></cat-button>
-    <cat-button type="primary" icon="trash-o"></cat-button>
+    <cat-button type="primary" icon="fa fa-edit"></cat-button>
+    <cat-button type="primary" icon="fa fa-share-alt"></cat-button>
+    <cat-button type="primary" icon="fa fa-trash-o"></cat-button>
   </cat-button-group>
 </div>
 
@@ -134,11 +134,15 @@ const sizeCode = `
 }
 </style>
 `
+const blockCode = `
+<cat-button type="primary" block>块级按钮</cat-button>
+`
 
 export default {
   baseCode,
   disabledCode,
   iconCode,
   groupCode,
-  sizeCode
+  sizeCode,
+  blockCode
 }
