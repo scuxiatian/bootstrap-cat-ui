@@ -1,24 +1,19 @@
 <template>
   <div>
-    <cat-row>
+    <cat-row type="flex">
       <cat-col :span="4"><div class="grid-content bg-purple"></div></cat-col>
       <cat-col :span="4"><div class="grid-content bg-purple-dark"></div></cat-col>
       <cat-col :span="4"><div class="grid-content bg-purple"></div></cat-col>
     </cat-row>
-    <cat-row align="center">
+    <cat-row type="flex" align="middle">
       <cat-col :span="4"><div class="grid-content bg-purple"></div></cat-col>
       <cat-col :span="4"><div class="grid-content bg-purple-dark"></div></cat-col>
       <cat-col :span="4"><div class="grid-content bg-purple"></div></cat-col>
     </cat-row>
-    <cat-row align="end">
+    <cat-row type="flex" align="bottom">
       <cat-col :span="4"><div class="grid-content bg-purple"></div></cat-col>
       <cat-col :span="4"><div class="grid-content bg-purple-dark"></div></cat-col>
       <cat-col :span="4"><div class="grid-content bg-purple"></div></cat-col>
-    </cat-row>
-    <cat-row>
-      <cat-col :span="4"><div class="grid-content bg-purple"></div></cat-col>
-      <cat-col :span="4" align="center"><div class="grid-content bg-purple-dark"></div></cat-col>
-      <cat-col :span="4" align="end"><div class="grid-content bg-purple"></div></cat-col>
     </cat-row>
   </div>
 </template>

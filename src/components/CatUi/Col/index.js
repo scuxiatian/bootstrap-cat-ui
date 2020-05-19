@@ -1,23 +1,18 @@
 export default {
   name: 'CatCol',
   props: {
-    // 渲染标签
     tag: {
       type: String,
       default: 'div'
     },
-    // 栅格所占列数
     span: {
       type: Number,
-      default: 0
+      default: 24
     },
-    // 栅格偏移列数
     offset: Number,
-    // 栅格排列顺序
-    order: Number,
-    // 栅格垂直对齐方式
-    align: String,
-    // 响应式布局
+    pull: Number,
+    push: Number,
+    xs: [Number, Object],
     sm: [Number, Object],
     md: [Number, Object],
     lg: [Number, Object],
@@ -40,38 +35,28 @@ export default {
       return style
     },
     colClass () {
-      const classes = ['cat-col']
-      // 处理span
-      if (!this.span) {
-        classes.push('col')
-      }
-      classes.push(`col-${this.span} `)
-      // 处理offset
-      if (this.offset || this.offset === 0) {
-        classes.push(`offset-${this.offset}`)
-      }
-      // 处理列顺序
-      if (this.order) {
-        classes.push(`order-${this.order}`)
-      }
-      // 垂直对齐
-      if (this.align) {
-        classes.push(`align-self-${this.align}`)
-      }
-      // 响应式布局
-      const renderProps = ['sm', 'md', 'lg', 'xl']
-      renderProps.forEach(size => {
-        // 值为数字表示栅格所占列数
+      const classList = ['cat-col']
+
+      const baseProps = ['span', 'offset', 'pull', 'push']
+      baseProps.forEach(prop => {
+        if (this[prop] || this[prop] === 0) {
+          const prefix = prop === 'span' ? 'cat-col-' : `cat-col-${prop}-`
+          classList.push(`${prefix}${this[prop]}`)
+        }
+      })
+
+      const responsiveProps = ['xs', 'sm', 'md', 'lg', 'xl']
+      responsiveProps.forEach(size => {
         if (typeof this[size] === 'number') {
-          classes.push(`col-${size}-${this[size]}`)
-        } else if (typeof this[size] === 'object') { // 值为对象
+          classList.push(`cat-col-${size}-${this[size]}`)
+        } else if (typeof this[size] === 'object') {
           const props = this[size]
           Object.keys(props).forEach(prop => {
-            classes.push(prop === 'span' ? `col-${size}-${props[prop]}` : `${prop}-${size}-${props[prop]}`)
+            classList.push(prop === 'span' ? `cat-col-${size}-${props[prop]}` : `cat-col-${size}-${prop}-${props[prop]}`)
           })
         }
       })
-      return classes
+      return classList
     }
   },
   render (h) {

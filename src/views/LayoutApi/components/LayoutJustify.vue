@@ -1,29 +1,29 @@
 <template>
   <div>
-    <cat-row>
-      <cat-col :span="3"><div class="grid-content bg-purple"></div></cat-col>
-      <cat-col :span="3"><div class="grid-content bg-purple-light"></div></cat-col>
-      <cat-col :span="3"><div class="grid-content bg-purple"></div></cat-col>
+    <cat-row type="flex">
+      <cat-col :span="6"><div class="grid-content bg-purple"></div></cat-col>
+      <cat-col :span="6"><div class="grid-content bg-purple-light"></div></cat-col>
+      <cat-col :span="6"><div class="grid-content bg-purple"></div></cat-col>
     </cat-row>
-    <cat-row justify="center">
-      <cat-col :span="3"><div class="grid-content bg-purple"></div></cat-col>
-      <cat-col :span="3"><div class="grid-content bg-purple-light"></div></cat-col>
-      <cat-col :span="3"><div class="grid-content bg-purple"></div></cat-col>
+    <cat-row type="flex" justify="center">
+      <cat-col :span="6"><div class="grid-content bg-purple"></div></cat-col>
+      <cat-col :span="6"><div class="grid-content bg-purple-light"></div></cat-col>
+      <cat-col :span="6"><div class="grid-content bg-purple"></div></cat-col>
     </cat-row>
-    <cat-row justify="end">
-      <cat-col :span="3"><div class="grid-content bg-purple"></div></cat-col>
-      <cat-col :span="3"><div class="grid-content bg-purple-light"></div></cat-col>
-      <cat-col :span="3"><div class="grid-content bg-purple"></div></cat-col>
+    <cat-row type="flex" justify="end">
+      <cat-col :span="6"><div class="grid-content bg-purple"></div></cat-col>
+      <cat-col :span="6"><div class="grid-content bg-purple-light"></div></cat-col>
+      <cat-col :span="6"><div class="grid-content bg-purple"></div></cat-col>
     </cat-row>
-    <cat-row justify="between">
-      <cat-col :span="3"><div class="grid-content bg-purple"></div></cat-col>
-      <cat-col :span="3"><div class="grid-content bg-purple-light"></div></cat-col>
-      <cat-col :span="3"><div class="grid-content bg-purple"></div></cat-col>
+    <cat-row type="flex" justify="space-between">
+      <cat-col :span="6"><div class="grid-content bg-purple"></div></cat-col>
+      <cat-col :span="6"><div class="grid-content bg-purple-light"></div></cat-col>
+      <cat-col :span="6"><div class="grid-content bg-purple"></div></cat-col>
     </cat-row>
-    <cat-row justify="around">
-      <cat-col :span="3"><div class="grid-content bg-purple"></div></cat-col>
-      <cat-col :span="3"><div class="grid-content bg-purple-light"></div></cat-col>
-      <cat-col :span="3"><div class="grid-content bg-purple"></div></cat-col>
+    <cat-row type="flex" justify="space-around">
+      <cat-col :span="6"><div class="grid-content bg-purple"></div></cat-col>
+      <cat-col :span="6"><div class="grid-content bg-purple-light"></div></cat-col>
+      <cat-col :span="6"><div class="grid-content bg-purple"></div></cat-col>
     </cat-row>
   </div>
 </template>

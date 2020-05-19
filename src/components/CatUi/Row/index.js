@@ -2,22 +2,19 @@ export default {
   name: 'CatRow',
   componentName: 'CatRow',
   props: {
-    // 渲染标签
     tag: {
       type: String,
       default: 'div'
     },
-    // 间隔
     gutter: {
       type: Number,
       default: 0
     },
-    // 栅格垂直对齐方式
+    type: String,
     align: {
       type: String,
-      default: 'start'
+      default: 'top'
     },
-    // 栅格水平对齐方式
     justify: {
       type: String,
       default: 'start'
@@ -25,13 +22,11 @@ export default {
   },
   computed: {
     rowClass () {
-      const classes = ['row', 'cat-row']
-      classes.push(`align-items-${this.align}`)
-      classes.push(`justify-content-${this.justify}`)
-      if (this.gutter === 0) {
-        classes.push('no-gutters')
-      }
-      return classes
+      const classList = ['cat-row']
+      this.align !== 'top' && classList.push(`is-align-${this.align}`)
+      this.justify !== 'start' && classList.push(`is-justify-${this.justify}`)
+      this.type === 'flex' && classList.push('cat-row--flex')
+      return classList
     }
   },
   render (h) {

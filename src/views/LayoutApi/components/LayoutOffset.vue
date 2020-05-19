@@ -1,15 +1,15 @@
 <template>
   <div>
     <cat-row :gutter="20">
-      <cat-col :span="3"><div class="grid-content bg-purple"></div></cat-col>
-      <cat-col :span="3" :offset="3"><div class="grid-content bg-purple"></div></cat-col>
+      <cat-col :span="6"><div class="grid-content bg-purple"></div></cat-col>
+      <cat-col :span="6" :offset="6"><div class="grid-content bg-purple"></div></cat-col>
     </cat-row>
     <cat-row :gutter="20">
-      <cat-col :span="3" :offset="3"><div class="grid-content bg-purple"></div></cat-col>
-      <cat-col :span="3" :offset="3"><div class="grid-content bg-purple"></div></cat-col>
+      <cat-col :span="6" :offset="6"><div class="grid-content bg-purple"></div></cat-col>
+      <cat-col :span="6" :offset="6"><div class="grid-content bg-purple"></div></cat-col>
     </cat-row>
     <cat-row :gutter="20">
-      <cat-col :span="6" :offset="3"><div class="grid-content bg-purple"></div></cat-col>
+      <cat-col :span="12" :offset="6"><div class="grid-content bg-purple"></div></cat-col>
     </cat-row>
   </div>
 </template>

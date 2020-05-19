@@ -1,9 +1,9 @@
 const useCode = `
 <div>
-  <icon name="edit"></icon>
-  <icon name="share-alt"></icon>
-  <icon name="trash-o"></icon>
-  <cat-button type="primary" icon="search">搜索</cat-button>
+  <i class="fa fa-edit"></i>
+  <i class="cat-icon-share"></i>
+  <i class="cat-icon-delete"></i>
+  <cat-button type="primary" icon="cat-icon-search">搜索</cat-button>
 </div>
 `
 

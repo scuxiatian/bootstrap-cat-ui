@@ -1,16 +1,16 @@
 <template>
   <div>
-    <h4 class="show-title">{{ config.title }}</h4>
-    <h6 class="show-desc">{{ config.desc }}</h6>
+    <h3 class="show-title">{{ config.title }}</h3>
+    <h5 class="show-desc">{{ config.desc }}</h5>
     <div class="box view-box">
       <slot></slot>
-      <hr>
+      <hr color="#eeeeee">
       <div v-show="codeShow">
         <div v-if="config.codeDesc" class="code-desc">{{ config.codeDesc }}</div>
-        <pre><code class="code-content">{{ markedCodess }}</code></pre>
+        <pre><code>{{ markedCodess }}</code></pre>
       </div>
-      <div class="btn" @click="codeShow = !codeShow">
-        <span class="text-info">{{ buttonText }}</span>
+      <div class="box-foot">
+        <span class="text-info" @click="codeShow = !codeShow">{{ buttonText }}</span>
       </div>
     </div>
   </div>
@@ -44,16 +44,24 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.show-title, .show-desc {
+.show-title,
+.show-desc {
   margin: 20px 0;
+}
+pre,
+code {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 1em;
+}
+code {
+  font-size: 87.5%;
+  color: slateblue;
+  word-wrap: break-word;
 }
 .box {
   border: 1px solid #eeeeee;
   border-radius: 5px;
   padding: 10px;
-}
-.code-content {
-  color:slateblue;
 }
 .code-desc {
   border: 1px solid #eeeeee;
@@ -62,7 +70,11 @@ export default {
   margin: 10px;
   padding: 10px;
 }
-.btn {
+.box-foot {
   width: 100%;
+  text-align: center;
+}
+.text-info {
+  cursor: pointer;
 }
 </style>

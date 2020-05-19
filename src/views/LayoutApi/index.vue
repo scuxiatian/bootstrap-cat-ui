@@ -1,7 +1,5 @@
 <template>
-  <div class="page-container">
-    <h2 class="page-title">Layout 栅格布局</h2>
-    <h6 class="page-desc">通过基础的 12 分栏，迅速简便地创建布局。</h6>
+  <view-page title="Layout 栅格布局" desc="通过基础的 24 分栏，迅速简便地创建布局。">
     <show-box :config="layoutBaseConfig">
       <layout-base></layout-base>
     </show-box>
@@ -26,7 +24,7 @@
 
     <show-table title="Row" :data="rowAttributes"></show-table>
     <show-table title="Col" :data="colAttributes"></show-table>
-  </div>
+  </view-page>
 </template>
 
 <script>
@@ -73,43 +71,46 @@ export default {
       layoutOrderConfig: {
         title: '分栏排序',
         desc: '分栏重新排序',
-        codeDesc: '通过设定 Col 组件的 offset 属性（1-12）可以指定分栏的排列顺序。',
+        codeDesc: '通过设定 Col 组件的 pull 和 push 属性可以改变分栏的排列顺序。',
         code: code.orderCode
       },
       layoutJustifyConfig: {
         title: '水平对齐',
         desc: '对分栏进行灵活的水平对齐。',
-        codeDesc: '通过 justify 属性来指定 start, center, end, between, around 其中的值来定义子元素的排版方式',
+        codeDesc: '通过 justify 属性来指定 start, center, end, space-between, space-around 其中的值来定义子元素的排版方式。',
         code: code.justifyCode
       },
       layoutAlignConfig: {
         title: '垂直对齐',
         desc: '对分栏进行灵活的垂直对齐。',
-        codeDesc: '通过设定 Row 组件 align 属性来指定 start, center, end 其中的值来统一定义子元素的排版方式，也可以通过设定 Col 组件 align 属性来分别定义子元素的排版',
+        codeDesc: '通过设定 Row 组件 align 属性来指定 top, middle, bottom 其中的值来统一定义子元素的排版方式。',
         code: code.alignCode
       },
       layoutResponsiveConfig: {
         title: '响应式布局',
-        desc: '参照了 Bootstrap 的 响应式设计，预设了五个响应尺寸：xs、sm、md、lg 和 xl，不设置默认为xs',
-        codeDesc: '通过设定 Col 组件 sm、md、lg 和 xl 属性来实现响应式布局',
+        desc: '参照了 Bootstrap 的 响应式设计，预设了五个响应尺寸：xs、sm、md、lg 和 xl。',
+        codeDesc: '通过设定 Col 组件 xs、 sm、md、lg 和 xl 属性来实现响应式布局。',
         code: code.responsiveCode
       },
       rowAttributes: [
         ['tag', '自定义元素标签', 'string', '*', 'div'],
         ['gutter', '栅格间隔', 'number', '—', '0'],
-        ['align', '垂直排列方式', 'string', 'start/end/center', 'start'],
-        ['justify', '水平排列方式', 'string', 'start/end/center/around/between', 'start']
+        ['type', '布局模式，可选 flex，现代浏览器下有效', 'string', '—', '—'],
+        ['align', '垂直排列方式', 'string', 'top/middle/bottom', 'top'],
+        ['justify', '水平排列方式', 'string', 'start/end/center/space-around/space-between', 'start']
       ],
       colAttributes: [
         ['tag', '自定义元素标签', 'string', '*', 'div'],
-        ['span', '栅格占据的列数', 'number', '[1, 12]', '等分row'],
-        ['offset', '栅格左侧的间隔格数', 'number', '[0, 12]', '0'],
-        ['order', '栅格排列序号', 'number', '[1, 12]', '1'],
-        ['align', '垂直排列方式', 'string', 'start/end/center', 'start'],
-        ['sm', '≥576px 响应式栅格数或者栅格属性对象', 'number/object (例如： {span: 4, offset: 4, order: 4})', '—', '—'],
-        ['md', '≥768px 响应式栅格数或者栅格属性对象', 'number/object (例如： {span: 4, offset: 4, order: 4})', '—', '—'],
-        ['lg', '≥992px 响应式栅格数或者栅格属性对象', 'number/object (例如： {span: 4, offset: 4, order: 4})', '—', '—'],
-        ['xl', '≥1200px 响应式栅格数或者栅格属性对象', 'number/object (例如： {span: 4, offset: 4, order: 4})', '—', '—']
+        ['span', '栅格占据的列数', 'number', '—', '24'],
+        ['offset', '栅格左侧的间隔格数', 'number', '—', '0'],
+        ['push', '栅格向右移动格数', 'number', '—', '0'],
+        ['pull', '栅格向左移动格数', 'number', '—', '0'],
+        ['align', '垂直排列方式', 'string', 'top/middle/bottom', 'top'],
+        ['xs', '<768px 响应式栅格数或者栅格属性对象', 'number/object (例如： {span: 4, offset: 4})', '—', '—'],
+        ['sm', '≥768px 响应式栅格数或者栅格属性对象', 'number/object (例如： {span: 4, offset: 4})', '—', '—'],
+        ['md', '≥992px 响应式栅格数或者栅格属性对象', 'number/object (例如： {span: 4, offset: 4})', '—', '—'],
+        ['lg', '≥1200px 响应式栅格数或者栅格属性对象', 'number/object (例如： {span: 4, offset: 4})', '—', '—'],
+        ['xl', '≥1920px 响应式栅格数或者栅格属性对象', 'number/object (例如： {span: 4, offset: 4})', '—', '—']
       ]
     }
   }

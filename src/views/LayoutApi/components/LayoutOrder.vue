@@ -1,9 +1,8 @@
 <template>
   <cat-row :gutter="5">
-    <cat-col><div class="grid-content bg-purple">1</div></cat-col>
-    <cat-col :order="12"><div class="grid-content bg-purple">2</div></cat-col>
-    <cat-col :order="1"><div class="grid-content bg-purple">3</div></cat-col>
-    <cat-col :order="6"><div class="grid-content bg-purple">4</div></cat-col>
+    <cat-col :span="6" :push="18"><div class="grid-content bg-purple">1</div></cat-col>
+    <cat-col :span="12" :pull="6"><div class="grid-content bg-purple">2</div></cat-col>
+    <cat-col :span="6" :pull="6"><div class="grid-content bg-purple">3</div></cat-col>
   </cat-row>
 </template>
 

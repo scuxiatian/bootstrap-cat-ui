@@ -1,7 +1,7 @@
 <template>
   <cat-row class="home" :gutter="10">
-    <cat-col :span="2">
-      <ul class="nav flex-column">
+    <cat-col :span="3">
+      <ul class="cat-menu">
         <!-- <li class="nav-item">
           <router-link class="nav-link active" to="/test">Test</router-link>
         </li> -->
@@ -10,7 +10,7 @@
         </li>
       </ul>
     </cat-col>
-    <cat-col>
+    <cat-col :span="21">
       <router-view />
     </cat-col>
   </cat-row>
