@@ -18,12 +18,16 @@ export default {
       type: String,
       default: ''
     },
-    defaultOpenedMenus: Array
+    defaultOpenedMenus: Array,
+    textColor: String,
+    activeTextColor: String
   },
   data () {
     return {
       activeIndex: this.defaultActive,
-      openedMenus: this.defaultOpenedMenus ? this.defaultOpenedMenus.slice(0) : []
+      openedMenus: this.defaultOpenedMenus ? this.defaultOpenedMenus.slice(0) : [],
+      items: {},
+      submenus: {}
     }
   },
   provide () {
@@ -46,9 +50,19 @@ export default {
   },
   methods: {
     handleItemClick (item) {
-      const { index } = item
-      this.activeIndex = index
-      this.$emit('select', index, item)
+      const { index, indexPath } = item
+      // const oldActiveIndex = this.activeIndex
+      const hasIndex = item.index !== null
+
+      if (hasIndex) {
+        this.activeIndex = item.index
+      }
+
+      this.$emit('select', index, indexPath, item)
+
+      if (this.mode === 'horizontal' || this.collapse) {
+        this.openedMenus = []
+      }
     },
     openMenu (index, indexPath) {
       const openedMenus = this.openedMenus
@@ -62,6 +76,18 @@ export default {
       if (i > -1) {
         this.openedMenus.splice(i, 1)
       }
+    },
+    addItem (item) {
+      this.$set(this.items, item.index, item)
+    },
+    removeItem (item) {
+      delete this.items[item.index]
+    },
+    addSubmenu (item) {
+      this.$set(this.submenus, item.index, item)
+    },
+    removeSubmenu (item) {
+      delete this.submenus[item.index]
     }
   },
   mounted () {

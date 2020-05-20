@@ -6,7 +6,7 @@ import ButtonGroup from './Button/ButtonGroup.vue'
 import Link from './Link'
 import Menu from './Menu'
 import MenuItem from './Menu/MenuItem.vue'
-import SubMenu from './Menu/SubMenu.vue'
+import Submenu from './Menu/Submenu.vue'
 
 Vue.component('cat-row', Row)
 Vue.component('cat-col', Col)
@@ -15,4 +15,4 @@ Vue.component('cat-button-group', ButtonGroup)
 Vue.component('cat-link', Link)
 Vue.component('cat-menu', Menu)
 Vue.component('cat-menu-item', MenuItem)
-Vue.component('cat-sub-menu', SubMenu)
+Vue.component('cat-submenu', Submenu)

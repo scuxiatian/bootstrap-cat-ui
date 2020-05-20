@@ -1,5 +1,5 @@
 <template>
-  <li class="cat-menu-item" role="menuitem" :class="menuItemClass" @click="handleItemClick">
+  <li class="cat-menu-item" role="menuitem" :class="menuItemClass" :style="[paddingStyle, itemStyle]" @click="handleItemClick">
     <slot></slot>
     <slot name="title"></slot>
   </li>
@@ -10,7 +10,8 @@ import Menu from './menu-mixins'
 import Emitter from '../utils/mixins/emitter'
 
 export default {
-  name: 'CatMenu',
+  name: 'CatMenuItem',
+  componentName: 'CatMenuItem',
   mixins: [Menu, Emitter],
   props: {
     disabled: {
@@ -32,12 +33,23 @@ export default {
       ]
       return classList
     },
-    menuItemStyle () {
+    activeTextColor () {
+      return this.rootMenu.activeTextColor || ''
+    },
+    textColor () {
+      return this.rootMenu.textColor || ''
+    },
+    itemStyle () {
       const style = {
-        cursor: this.disabled ? 'not-allowed' : 'pointer',
-        color: this.disabled ? 'grey' : false
+        color: this.active ? this.activeTextColor : this.textColor
+      }
+      if (this.mode === 'horizontal' && !this.isNested) {
+        style.borderBottomColor = this.active ? (this.rootMenu.activeTextColor ? this.activeTextColor : '') : 'transparent'
       }
       return style
+    },
+    isNested () {
+      return this.parentMenu !== this.rootMenu
     }
   },
   methods: {
@@ -47,6 +59,14 @@ export default {
         this.$emit('click', this)
       }
     }
+  },
+  mounted () {
+    this.parentMenu.addItem(this)
+    this.rootMenu.addItem(this)
+  },
+  beforeDestroy () {
+    this.parentMenu.removeItem(this)
+    this.rootMenu.removeItem(this)
   }
 }
 </script>

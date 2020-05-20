@@ -1,6 +1,6 @@
 <template>
-  <li class="cat-submenu" role="menuitem" :class="subMenuClass" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" @focus="handleMouseEnter">
-    <div class="cat-submenu__title" role="submenu-title">
+  <li class="cat-submenu" role="menuitem" :class="subMenuClass" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave(false)" @focus="handleMouseEnter">
+    <div class="cat-submenu__title" role="submenu-title" :style="[paddingStyle, titleStyle]">
         <slot name="title"></slot>
         <i class="cat-submenu__icon-arrow" :class="submenuTitleIcon"></i>
       </div>
@@ -61,15 +61,48 @@ export default {
   },
   data () {
     return {
+      popperJS: null,
       timeout: null,
-      mouseInChild: false
+      mouseInChild: false,
+      items: {},
+      submenus: {}
+    }
+  },
+  watch: {
+    opened () {
+      if (this.isMenuPopup) {
+        this.$nextTick(() => {
+          this.updatePopper()
+        })
+      }
     }
   },
   computed: {
+    active () {
+      let isActive = false
+      const submenus = this.submenus
+      const items = this.items
+
+      Object.keys(items).forEach(key => {
+        if (items[key].active) {
+          isActive = true
+        }
+      })
+
+      Object.keys(submenus).forEach(key => {
+        if (submenus[key].active) {
+          isActive = true
+        }
+      })
+
+      return isActive
+    },
     subMenuClass () {
       const classList = [
         {
-          'is-opended': this.opened
+          'is-opended': this.opened,
+          'is-active': this.active,
+          'is-disabled': this.disabled
         }
       ]
       return classList
@@ -93,11 +126,37 @@ export default {
     mode () {
       return this.rootMenu.mode
     },
+    activeTextColor () {
+      return this.rootMenu.activeTextColor || ''
+    },
+    textColor () {
+      return this.rootMenu.textColor || ''
+    },
     isMenuPopup () {
       return this.rootMenu.isMenuPopup
     },
+    isNested () {
+      return this.parentMenu !== this.rootMenu
+    },
+    titleStyle () {
+      if (this.mode !== 'horizontal') {
+        return {
+          color: this.textColor
+        }
+      }
+      return {
+        borderBottomColor: (this.active && !this.isNested)
+          ? (this.rootMenu.activeTextColor ? this.activeTextColor : '')
+          : 'transparent',
+        color: this.active
+          ? this.activeTextColor
+          : this.textColor
+      }
+    },
     submenuTitleIcon () {
-      return this.isFirstLevel ? 'cat-icon-arrow-down' : 'cat-icon-arrow-right'
+      return (this.rootMenu.mode === 'horizontal' && this.isFirstLevel) ||
+       (this.rootMenu.mode === 'vertical' && !this.rootMenu.collapse)
+        ? 'cat-icon-arrow-down' : 'cat-icon-arrow-right'
     }
   },
   methods: {
@@ -124,10 +183,24 @@ export default {
         !this.mouseInChild && this.rootMenu.closeMenu(this.index)
       }, this.showTimeout)
     },
+    addItem (item) {
+      this.$set(this.items, item.index, item)
+    },
+    removeItem (item) {
+      delete this.items[item.index]
+    },
+    addSubmenu (item) {
+      this.$set(this.submenus, item.index, item)
+    },
+    removeSubmenu (item) {
+      delete this.submenus[item.index]
+    },
     updatePlacement () {
       this.currentPlacement = this.mode === 'horizontal' && this.isFirstLevel ? 'bottom-start' : 'right-start'
     },
     initPopup () {
+      this.referenceElm = this.$el
+      this.popperElm = this.$refs.menu
       this.updatePlacement()
     }
   },
@@ -142,7 +215,13 @@ export default {
     })
   },
   mounted () {
+    this.parentMenu.addSubmenu(this)
+    this.rootMenu.addSubmenu(this)
     this.initPopup()
+  },
+  beforeDestroy () {
+    this.parentMenu.addSubmenu(this)
+    this.rootMenu.addSubmenu(this)
   }
 }
 </script>
