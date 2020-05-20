@@ -20,7 +20,6 @@
     </show-box>
 
     <show-table title="Button" :data="buttonAttributes"></show-table>
-    <show-table title="ButtonGroup" :data="buttonGroupAttributes"></show-table>
   </view-page>
 </template>
 

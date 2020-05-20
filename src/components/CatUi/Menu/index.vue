@@ -1,5 +1,5 @@
 <template>
-  <ul class="cat-menu nav nav-pills" :class="menuClass">
+  <ul role="menubar" class="cat-menu" :class="menuClass">
     <slot></slot>
   </ul>
 </template>
@@ -12,11 +12,18 @@ export default {
     mode: {
       type: String,
       default: 'vertical'
-    }
+    },
+    collapse: Boolean,
+    defaultActive: {
+      type: String,
+      default: ''
+    },
+    defaultOpenedMenus: Array
   },
   data () {
     return {
-      activeIndex: ''
+      activeIndex: this.defaultActive,
+      openedMenus: this.defaultOpenedMenus ? this.defaultOpenedMenus.slice(0) : []
     }
   },
   provide () {
@@ -26,11 +33,15 @@ export default {
   },
   computed: {
     menuClass () {
-      const classList = []
-      if (this.mode !== 'horizontal') {
-        classList.push('flex-column')
-      }
+      const classList = [
+        {
+          'cat-menu--horizontal': this.mode === 'horizontal'
+        }
+      ]
       return classList
+    },
+    isMenuPopup () {
+      return this.mode === 'horizontal' || (this.mode === 'vertical' && this.collapse)
     }
   },
   methods: {
@@ -38,6 +49,19 @@ export default {
       const { index } = item
       this.activeIndex = index
       this.$emit('select', index, item)
+    },
+    openMenu (index, indexPath) {
+      const openedMenus = this.openedMenus
+      if (openedMenus.indexOf(index) !== -1) {
+        return
+      }
+      this.openedMenus.push(index)
+    },
+    closeMenu (index) {
+      const i = this.openedMenus.indexOf(index)
+      if (i > -1) {
+        this.openedMenus.splice(i, 1)
+      }
     }
   },
   mounted () {

@@ -1,5 +1,5 @@
 <template>
-  <a :href="href" class="cat-link" :class="linkClass" :target="target" :disabled="disabled">
+  <a :href="disabled ? '' : href" class="cat-link" :class="linkClass" :target="target" :disabled="disabled">
     <i v-if="icon" :class="icon"></i>
     <span v-if="$slots.default" class="cat-link--inner">
       <slot></slot>

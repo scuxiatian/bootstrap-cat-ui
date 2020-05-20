@@ -1,6 +1,7 @@
 <template>
-  <li :class="linkClass" :style="menuItemStyle" @click="handleItemClick">
+  <li class="cat-menu-item" role="menuitem" :class="menuItemClass" @click="handleItemClick">
     <slot></slot>
+    <slot name="title"></slot>
   </li>
 </template>
 
@@ -22,16 +23,13 @@ export default {
     active () {
       return this.index === this.rootMenu.activeIndex
     },
-    linkClass () {
-      const parentMap = {
-        CatMenu: 'nav-link',
-        CatSubMenu: 'dropdown-item'
-      }
-      const classList = []
-      classList.push(parentMap[this.$parent.$options.componentName])
-      if (this.active) {
-        classList.push('active')
-      }
+    menuItemClass () {
+      const classList = [
+        {
+          'is-active': this.active,
+          'is-disabled': this.disabled
+        }
+      ]
       return classList
     },
     menuItemStyle () {
