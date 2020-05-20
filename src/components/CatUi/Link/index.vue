@@ -1,7 +1,12 @@
 <template>
   <a :href="href" class="cat-link" :class="linkClass" :target="target" :disabled="disabled">
     <i v-if="icon" :class="icon"></i>
-    <span class="link-content" :style="this.$slots.default && icon ? { 'margin-left': '5px' } : {}"><slot></slot></span>
+    <span v-if="$slots.default" class="cat-link--inner">
+      <slot></slot>
+    </span>
+    <template v-if="$slots.icon">
+      <slot name="icon"></slot>
+    </template>
   </a>
 </template>
 
@@ -11,12 +16,9 @@ export default {
   props: {
     type: {
       type: String,
-      default: 'dark'
+      default: 'default'
     },
-    href: {
-      type: String,
-      default: '#'
-    },
+    href: String,
     target: {
       type: String,
       default: '_self'
@@ -33,11 +35,13 @@ export default {
   },
   computed: {
     linkClass () {
-      const classList = []
-      classList.push(`text-${this.type}`)
-      if (!this.underline) {
-        classList.push('text-decoration-none')
-      }
+      const classList = [
+        `cat-link--${this.type}`,
+        {
+          'is-disabled': this.disabled,
+          'is-underline': this.underline && !this.disabled
+        }
+      ]
       return classList
     }
   }

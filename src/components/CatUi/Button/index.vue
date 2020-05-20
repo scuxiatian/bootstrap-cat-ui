@@ -1,7 +1,8 @@
 <template>
-  <button class="cat-button btn" :type="nativeType" :autofocus="autofocus" :class="buttonClass" :disabled="disabled">
-    <i v-if="icon" :class="icon"></i>
-    <span class="btn-content" :style="this.$slots.default && icon ? { 'margin-left': '5px' } : {}"><slot></slot></span>
+  <button class="cat-button" :type="nativeType" :autofocus="autofocus" :class="buttonClass" :disabled="disabled" @click="handleClick">
+    <i v-if="loading" class="cat-icon-loading"></i>
+    <i v-if="icon && !loading" :class="icon"></i>
+    <span v-if="$slots.default"><slot></slot></span>
   </button>
 </template>
 
@@ -11,13 +12,21 @@ export default {
   props: {
     type: {
       type: String,
-      default: 'light'
+      default: 'default'
     },
     plain: {
       type: Boolean,
       default: false
     },
-    block: {
+    round: {
+      type: Boolean,
+      default: false
+    },
+    circle: {
+      type: Boolean,
+      default: false
+    },
+    loading: {
       type: Boolean,
       default: false
     },
@@ -35,23 +44,27 @@ export default {
   },
   computed: {
     buttonClass () {
-      const classList = []
-      const prefix = this.plain ? 'btn-outline' : 'btn'
-      classList.push(`${prefix}-${this.type}`)
-      if (this.size) {
-        classList.push(`btn-${this.size}`)
-      }
-      if (this.block) {
-        classList.push('btn-block')
-      }
+      const classList = [
+        `cat-button--${this.type}`,
+        this.size ? `cat-button--${this.size}` : '',
+        {
+          'is-disabled': this.disabled,
+          'is-loading': this.loading,
+          'is-plain': this.plain,
+          'is-round': this.round,
+          'is-circle': this.circle
+        }
+      ]
       return classList
+    }
+  },
+  methods: {
+    handleClick (e) {
+      this.$emit('click', e)
     }
   }
 }
 </script>
 
 <style scoped>
-.btn-content .fa {
-  margin: 0 5px;
-}
 </style>

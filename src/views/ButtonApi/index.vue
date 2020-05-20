@@ -1,7 +1,5 @@
 <template>
-  <div class="page-container">
-    <h2 class="page-title">Button 按钮</h2>
-    <h6 class="page-desc">常用的操作按钮。</h6>
+  <view-page title="Button 按钮" desc="常用的操作按钮。">
     <show-box :config="buttonBaseConfig">
       <button-base></button-base>
     </show-box>
@@ -17,13 +15,13 @@
     <show-box :config="buttonSizeConfig">
       <button-size></button-size>
     </show-box>
-    <show-box :config="buttonBlockConfig">
-      <button-block></button-block>
+    <show-box :config="buttonLoadinConfig">
+      <button-loading></button-loading>
     </show-box>
 
     <show-table title="Button" :data="buttonAttributes"></show-table>
     <show-table title="ButtonGroup" :data="buttonGroupAttributes"></show-table>
-  </div>
+  </view-page>
 </template>
 
 <script>
@@ -32,7 +30,7 @@ import ButtonDisabled from './components/ButtonDisabled'
 import ButtonIcon from './components/ButtonIcon'
 import ButtonGroup from './components/ButtonGroup'
 import ButtonSize from './components/ButtonSize'
-import ButtonBlock from './components/ButtonBlock'
+import ButtonLoading from './components/ButtonLoading'
 import code from './code'
 
 export default {
@@ -43,7 +41,7 @@ export default {
     ButtonIcon,
     ButtonGroup,
     ButtonSize,
-    ButtonBlock
+    ButtonLoading
   },
   data () {
     return {
@@ -51,13 +49,13 @@ export default {
         title: '基础用法',
         desc: '基础的按钮用法。',
         code: code.baseCode,
-        codeDesc: '使用type 和 plain属性来定义 Button 的样式。'
+        codeDesc: '使用 type、plain、round 和 circle 属性来定义 Button 的样式。'
       },
       buttonDisabledConfig: {
         title: '禁用状态',
         desc: '按钮不可用状态。',
         code: code.disabledCode,
-        codeDesc: '你可以使用 disabled 属性来定义按钮是否可用，它接受一个Boolean值。'
+        codeDesc: '你可以使用 disabled 属性来定义按钮是否可用，它接受一个 Boolean 值。'
       },
       buttonIconConfig: {
         title: '图标按钮',
@@ -73,27 +71,27 @@ export default {
       },
       buttonSizeConfig: {
         title: '不同尺寸',
-        desc: 'Button 组件与 ButtonGroup 组件提供除了默认值以外的两种尺寸，可以在不同场景下选择合适的按钮尺寸。',
+        desc: 'Button 组件与 ButtonGroup 组件提供除了默认值以外的三种尺寸，可以在不同场景下选择合适的按钮尺寸。',
         code: code.sizeCode,
-        codeDesc: '额外的尺寸：lg、sm，通过设置size属性来配置它们。'
+        codeDesc: '额外的尺寸：medium、small、mini，通过设置size属性来配置它们。'
       },
-      buttonBlockConfig: {
-        title: '块级按钮',
-        desc: '按钮占满水平空间',
-        code: code.blockCode,
-        codeDesc: '你可以使用 block 属性来定义按钮是否占满水平空间，它接受一个Boolean值。'
+      buttonLoadinConfig: {
+        title: '加载中',
+        desc: '点击按钮后进行数据加载操作，在按钮上显示加载状态。',
+        code: code.loadingCode,
+        codeDesc: '要设置为 loading 状态，只要设置loading属性为true即可。'
       },
       buttonAttributes: [
-        ['size', '尺寸', 'string', 'lg / sm', '—'],
-        ['type', '类型', 'string', 'primary / secondary / success / warning / danger / info / dark / light', 'light'],
+        ['size', '尺寸', 'string', 'medium / small / mini', '—'],
+        ['type', '类型', 'string', 'primary / success / warning / danger / info', '—'],
         ['plain', '是否朴素按钮', 'boolean', '—', 'false'],
+        ['round', '是否圆角按钮', 'boolean', '—', 'false'],
+        ['circle', '是否圆形按钮', 'boolean', '—', 'false'],
+        ['loading', '是否加载中状态', 'boolean', '—', 'false'],
         ['disabled', '是否禁用状态', 'boolean', '—', 'false'],
         ['icon', '图标类名', 'string', '—', '—'],
         ['autofocus', '是否默认聚焦', 'boolean', '—', 'false'],
         ['native-type', '原生 type 属性', 'string', 'button / submit / reset', 'button']
-      ],
-      buttonGroupAttributes: [
-        ['size', '尺寸', 'string', 'lg / sm', '—']
       ]
     }
   }

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <cat-link icon="fa fa-edit">编辑</cat-link>
-    <cat-link>查看<i class="fa fa-eye"></i></cat-link>
+    <cat-link icon="cat-icon-edit">编辑</cat-link>
+    <cat-link><i class="cat-icon-view cat-icon--right" slot="icon"></i>查看</cat-link>
   </div>
 </template>
 

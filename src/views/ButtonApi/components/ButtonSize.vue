@@ -1,30 +1,10 @@
 <template>
   <div>
     <div class="button-row">
-      <cat-button type="primary" size="lg">大型按钮</cat-button>
       <cat-button type="primary">默认按钮</cat-button>
-      <cat-button type="primary" size="sm">小型按钮</cat-button>
-    </div>
-    <div>
-      <cat-button-group size="lg">
-        <cat-button type="primary">大型按钮组</cat-button>
-        <cat-button type="primary">大型按钮组</cat-button>
-        <cat-button type="primary">大型按钮组</cat-button>
-      </cat-button-group>
-    </div>
-    <div>
-      <cat-button-group>
-        <cat-button type="primary">默认按钮组</cat-button>
-        <cat-button type="primary">默认按钮组</cat-button>
-        <cat-button type="primary">默认按钮组</cat-button>
-      </cat-button-group>
-    </div>
-    <div>
-      <cat-button-group size="sm">
-        <cat-button type="primary">小型按钮组</cat-button>
-        <cat-button type="primary">小型按钮组</cat-button>
-        <cat-button type="primary">小型按钮组</cat-button>
-      </cat-button-group>
+      <cat-button type="primary" size="medium">中型按钮</cat-button>
+      <cat-button type="primary" size="small">小型按钮</cat-button>
+      <cat-button type="primary" size="mini">超小按钮</cat-button>
     </div>
   </div>
 </template>

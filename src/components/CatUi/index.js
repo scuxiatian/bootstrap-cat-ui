@@ -2,11 +2,11 @@ import Vue from 'vue'
 import Row from './Row'
 import Col from './Col'
 import Button from './Button'
-import ButtonGroup from './ButtonGroup'
+import ButtonGroup from './Button/ButtonGroup.vue'
 import Link from './Link'
 import Menu from './Menu'
-import MenuItem from './MenuItem'
-import SubMenu from './SubMenu'
+import MenuItem from './Menu/MenuItem.vue'
+import SubMenu from './Menu/SubMenu.vue'
 
 Vue.component('cat-row', Row)
 Vue.component('cat-col', Col)

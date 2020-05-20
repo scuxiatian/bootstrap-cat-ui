@@ -1,8 +1,8 @@
 <template>
   <div>
     <cat-button-group>
-      <cat-button type="primary" icon="fa fa-angle-left">上一页</cat-button>
-      <cat-button type="primary">下一页<i class="fa fa-angle-right"></i></cat-button>
+      <cat-button type="primary" icon="cat-icon-arrow-left">上一页</cat-button>
+      <cat-button type="primary">下一页<i class="cat-icon-arrow-right cat-icon--right"></i></cat-button>
     </cat-button-group>
     <cat-button-group>
       <cat-button type="primary" icon="fa fa-edit"></cat-button>
