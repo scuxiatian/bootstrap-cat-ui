@@ -1,5 +1,13 @@
 <template>
-  <li class="cat-menu-item" role="menuitem" :class="menuItemClass" :style="[paddingStyle, itemStyle]" @click="handleItemClick">
+  <li class="cat-menu-item"
+    role="menuitem"
+    :class="menuItemClass"
+    :style="[paddingStyle, itemStyle, {backgroundColor}]"
+    @click="handleItemClick"
+    @mouseenter="onMouseEnter"
+    @focus="onMouseEnter"
+    @blur="onMouseLeave"
+    @mouseleave="onMouseLeave">
     <slot></slot>
     <slot name="title"></slot>
   </li>
@@ -18,7 +26,10 @@ export default {
       type: Boolean,
       default: false
     },
-    index: String
+    index: {
+      default: null,
+      validator: val => typeof val === 'string' || val === null
+    }
   },
   computed: {
     active () {
@@ -33,18 +44,29 @@ export default {
       ]
       return classList
     },
+    hoverBackground () {
+      return this.rootMenu.hoverBackground
+    },
+    backgroundColor () {
+      return this.rootMenu.backgroundColor || ''
+    },
     activeTextColor () {
       return this.rootMenu.activeTextColor || ''
     },
     textColor () {
       return this.rootMenu.textColor || ''
     },
+    mode () {
+      return this.rootMenu.mode
+    },
     itemStyle () {
       const style = {
         color: this.active ? this.activeTextColor : this.textColor
       }
       if (this.mode === 'horizontal' && !this.isNested) {
-        style.borderBottomColor = this.active ? (this.rootMenu.activeTextColor ? this.activeTextColor : '') : 'transparent'
+        style.borderBottomColor = this.active
+          ? (this.rootMenu.activeTextColor ? this.activeTextColor : '')
+          : 'transparent'
       }
       return style
     },
@@ -53,6 +75,14 @@ export default {
     }
   },
   methods: {
+    onMouseEnter () {
+      if (this.mode === 'horizontal' && !this.rootMenu.backgroundColor) return
+      this.$el.style.backgroundColor = this.hoverBackground
+    },
+    onMouseLeave () {
+      if (this.mode === 'horizontal' && !this.rootMenu.backgroundColor) return
+      this.$el.style.backgroundColor = this.backgroundColor
+    },
     handleItemClick () {
       if (!this.disabled) {
         this.dispatch('CatMenu', 'item-click', this)

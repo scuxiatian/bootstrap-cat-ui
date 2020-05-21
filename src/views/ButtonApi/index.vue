@@ -6,6 +6,9 @@
     <show-box :config="buttonDisabledConfig">
       <button-disabled></button-disabled>
     </show-box>
+    <show-box :config="buttonTextConfig">
+      <button-text></button-text>
+    </show-box>
     <show-box :config="buttonIconConfig">
       <button-icon></button-icon>
     </show-box>
@@ -26,6 +29,7 @@
 <script>
 import ButtonBase from './components/ButtonBase'
 import ButtonDisabled from './components/ButtonDisabled'
+import ButtonText from './components/ButtonText'
 import ButtonIcon from './components/ButtonIcon'
 import ButtonGroup from './components/ButtonGroup'
 import ButtonSize from './components/ButtonSize'
@@ -37,6 +41,7 @@ export default {
   components: {
     ButtonBase,
     ButtonDisabled,
+    ButtonText,
     ButtonIcon,
     ButtonGroup,
     ButtonSize,
@@ -55,6 +60,11 @@ export default {
         desc: '按钮不可用状态。',
         code: code.disabledCode,
         codeDesc: '你可以使用 disabled 属性来定义按钮是否可用，它接受一个 Boolean 值。'
+      },
+      buttonTextConfig: {
+        title: '文字按钮',
+        desc: '没有边框和背景色的按钮。',
+        code: code.textCode
       },
       buttonIconConfig: {
         title: '图标按钮',
@@ -82,7 +92,7 @@ export default {
       },
       buttonAttributes: [
         ['size', '尺寸', 'string', 'medium / small / mini', '—'],
-        ['type', '类型', 'string', 'primary / success / warning / danger / info', '—'],
+        ['type', '类型', 'string', 'primary / success / warning / danger / info / text', '—'],
         ['plain', '是否朴素按钮', 'boolean', '—', 'false'],
         ['round', '是否圆角按钮', 'boolean', '—', 'false'],
         ['circle', '是否圆形按钮', 'boolean', '—', 'false'],

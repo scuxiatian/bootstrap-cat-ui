@@ -10,7 +10,11 @@
         <pre><code>{{ markedCodess }}</code></pre>
       </div>
       <div class="box-foot">
-        <span class="text-info" @click="codeShow = !codeShow">{{ buttonText }}</span>
+        <cat-button type="text"
+          @click="codeShow = !codeShow"
+          :icon="codeShow ? 'cat-icon-caret-top' : 'cat-icon-caret-bottom'">
+          {{ buttonText }}
+        </cat-button>
       </div>
     </div>
   </div>

@@ -52,6 +52,12 @@ const disabledCode = `
   <cat-button type="info" plain disabled>信息按钮</cat-button>
 </div>
 `
+const textCode = `
+<div>
+  <cat-button type="text">文字按钮</cat-button>
+  <cat-button type="text" disabled>文字按钮</cat-button>
+</div>
+`
 
 const iconCode = `
 <div>
@@ -92,6 +98,7 @@ const loadingCode = `
 export default {
   baseCode,
   disabledCode,
+  textCode,
   iconCode,
   groupCode,
   sizeCode,

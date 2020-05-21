@@ -1,18 +1,39 @@
 <template>
-  <li class="cat-submenu" role="menuitem" :class="subMenuClass" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave(false)" @focus="handleMouseEnter">
-    <div class="cat-submenu__title" role="submenu-title" :style="[paddingStyle, titleStyle]">
+  <li class="cat-submenu"
+    role="menuitem"
+    :class="subMenuClass"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave(false)"
+    @focus="handleMouseEnter">
+    <div class="cat-submenu__title"
+      role="submenu-title"
+      @mouseenter="handleTitleMouseEnter"
+      @mouseleave="handleTitleMouseLeave"
+      :style="[paddingStyle, titleStyle, {backgroundColor}]">
         <slot name="title"></slot>
         <i class="cat-submenu__icon-arrow" :class="submenuTitleIcon"></i>
       </div>
     <template v-if="isMenuPopup">
-      <div ref="menu" v-show="opened" :class="[`cat-menu--${mode}`, popperClass]">
-        <ul role="menu" class="cat-menu cat-menu--popup" :class="`cat-menu--popup-${currentPlacement}`">
+      <div ref="menu"
+        v-show="opened"
+        :class="[`cat-menu--${mode}`, popperClass]"
+        @mouseenter="handleMouseEnter($event, 100)"
+        @mouseleave="handleMouseLeave(true)"
+        @focus="handleMouseEnter($event, 100)"
+        >
+        <ul role="menu"
+          class="cat-menu cat-menu--popup"
+          :class="`cat-menu--popup-${currentPlacement}`"
+          :style="{ backgroundColor: rootMenu.backgroundColor || '' }">
           <slot></slot>
         </ul>
       </div>
     </template>
     <template v-else>
-      <ul role="menu" class="cat-menu cat-menu--inline" v-show="opened">
+      <ul role="menu"
+        class="cat-menu cat-menu--inline"
+        v-show="opened"
+        :style="{ backgroundColor: rootMenu.backgroundColor || '' }">
         <slot></slot>
       </ul>
     </template>
@@ -45,19 +66,24 @@ export default {
   componentName: 'CatSubmenu',
   mixins: [Menu, Emitter, poperMixins],
   props: {
-    disabled: {
-      type: Boolean,
-      default: false
-    },
     index: {
-      type: [String, Object],
-      default: null
+      type: String,
+      required: true
     },
     showTimeout: {
       type: Number,
       default: 300
     },
-    popperClass: String
+    hideTimeout: {
+      type: Number,
+      default: 300
+    },
+    popperClass: String,
+    disabled: Boolean,
+    popperAppendToBody: {
+      type: Boolean,
+      default: undefined
+    }
   },
   data () {
     return {
@@ -78,6 +104,12 @@ export default {
     }
   },
   computed: {
+    appendToBody () {
+      return this.popperAppendToBody === undefined ? this.isFirstLevel : this.popperAppendToBody
+    },
+    opened () {
+      return this.rootMenu.openedMenus.indexOf(this.index) > -1
+    },
     active () {
       let isActive = false
       const submenus = this.submenus
@@ -107,8 +139,35 @@ export default {
       ]
       return classList
     },
-    opened () {
-      return this.rootMenu.openedMenus.indexOf(this.index) > -1
+    mode () {
+      return this.rootMenu.mode
+    },
+    backgroundColor () {
+      return this.rootMenu.backgroundColor || ''
+    },
+    activeTextColor () {
+      return this.rootMenu.activeTextColor || ''
+    },
+    textColor () {
+      return this.rootMenu.textColor || ''
+    },
+    isMenuPopup () {
+      return this.rootMenu.isMenuPopup
+    },
+    titleStyle () {
+      if (this.mode !== 'horizontal') {
+        return {
+          color: this.textColor
+        }
+      }
+      return {
+        borderBottomColor: this.active
+          ? (this.rootMenu.activeTextColor ? this.activeTextColor : '')
+          : 'transparent',
+        color: this.active
+          ? this.activeTextColor
+          : this.textColor
+      }
     },
     isFirstLevel () {
       let isFirstLevel = true
@@ -123,36 +182,6 @@ export default {
       }
       return isFirstLevel
     },
-    mode () {
-      return this.rootMenu.mode
-    },
-    activeTextColor () {
-      return this.rootMenu.activeTextColor || ''
-    },
-    textColor () {
-      return this.rootMenu.textColor || ''
-    },
-    isMenuPopup () {
-      return this.rootMenu.isMenuPopup
-    },
-    isNested () {
-      return this.parentMenu !== this.rootMenu
-    },
-    titleStyle () {
-      if (this.mode !== 'horizontal') {
-        return {
-          color: this.textColor
-        }
-      }
-      return {
-        borderBottomColor: (this.active && !this.isNested)
-          ? (this.rootMenu.activeTextColor ? this.activeTextColor : '')
-          : 'transparent',
-        color: this.active
-          ? this.activeTextColor
-          : this.textColor
-      }
-    },
     submenuTitleIcon () {
       return (this.rootMenu.mode === 'horizontal' && this.isFirstLevel) ||
        (this.rootMenu.mode === 'vertical' && !this.rootMenu.collapse)
@@ -160,6 +189,18 @@ export default {
     }
   },
   methods: {
+    addItem (item) {
+      this.$set(this.items, item.index, item)
+    },
+    removeItem (item) {
+      delete this.items[item.index]
+    },
+    addSubmenu (item) {
+      this.$set(this.submenus, item.index, item)
+    },
+    removeSubmenu (item) {
+      delete this.submenus[item.index]
+    },
     handleMouseEnter (event, showTimeout = this.showTimeout) {
       if (!('ActiveXObject' in window) && event.type === 'focus' && !event.relatedTarget) {
         return
@@ -174,26 +215,35 @@ export default {
       this.timeout = setTimeout(() => {
         rootMenu.openMenu(this.index, this.indexPath)
       }, this.showTimeout)
+
+      if (this.appendToBody) {
+        this.$parent.$el.dispatchEvent(new MouseEvent('mouseenter'))
+      }
     },
     handleMouseLeave (deepDispatch = false) {
+      const { rootMenu } = this
       this.dispatch('CatSubmenu', 'mouse-leave-child')
 
       clearTimeout(this.timeout)
       this.timeout = setTimeout(() => {
-        !this.mouseInChild && this.rootMenu.closeMenu(this.index)
-      }, this.showTimeout)
+        !this.mouseInChild && rootMenu.closeMenu(this.index)
+      }, this.hideTimeout)
+
+      if (this.appendToBody && deepDispatch) {
+        if (this.$parent.$options.name === 'CatSubmenu') {
+          this.$parent.handleMouseLeave(true)
+        }
+      }
     },
-    addItem (item) {
-      this.$set(this.items, item.index, item)
+    handleTitleMouseEnter () {
+      if (this.mode === 'horizontal' && !this.rootMenu.backgroundColor) return
+      const title = this.$refs['submenu-title']
+      title && (title.style.backgroundColor = this.rootMenu.hoverBackground)
     },
-    removeItem (item) {
-      delete this.items[item.index]
-    },
-    addSubmenu (item) {
-      this.$set(this.submenus, item.index, item)
-    },
-    removeSubmenu (item) {
-      delete this.submenus[item.index]
+    handleTitleMouseLeave () {
+      if (this.mode === 'horizontal' && !this.rootMenu.backgroundColor) return
+      const title = this.$refs['submenu-title']
+      title && (title.style.backgroundColor = this.rootMenu.backgroundColor || '')
     },
     updatePlacement () {
       this.currentPlacement = this.mode === 'horizontal' && this.isFirstLevel ? 'bottom-start' : 'right-start'
@@ -225,9 +275,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.fa {
-  margin-left: 5px;
-}
-</style>
