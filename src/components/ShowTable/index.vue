@@ -36,6 +36,14 @@ export default {
         attributes: {
           title: 'Attributes',
           heads: ['参数', '说明', '类型', '可选值', '默认值']
+        },
+        methods: {
+          title: 'Methods',
+          heads: ['方法名称', '说明', '参数']
+        },
+        events: {
+          title: 'Events',
+          heads: ['事件名称', '说明', '回调参数']
         }
       }
     }

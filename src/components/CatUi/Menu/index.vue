@@ -1,16 +1,28 @@
-<template>
-  <ul role="menubar"
-  class="cat-menu"
-  :class="menuClass"
-  :style="{ backgroundColor: backgroundColor || ''}">
-    <slot></slot>
-  </ul>
-</template>
-
 <script>
+import Emitter from '../utils/mixins/emitter'
+import Migrating from '../utils/mixins/migrating'
+import MenuCollapseTransition from './MenuCollapseTransition'
+
 export default {
   name: 'CatMenu',
   componentName: 'CatMenu',
+  render (h) {
+    const component = h('ul', {
+      class: {
+        'cat-menu--horizontal': this.mode === 'horizontal',
+        'cat-menu--collapse': this.collapse,
+        'cat-menu': true
+      },
+      style: { backgroundColor: this.backgroundColor || '' },
+      key: +this.collapse
+    }, this.$slots.default)
+    if (this.collapseTransition) {
+      return h(MenuCollapseTransition, {}, [component])
+    } else {
+      return component
+    }
+  },
+  mixins: [Emitter, Migrating],
   props: {
     mode: {
       type: String,
@@ -53,7 +65,8 @@ export default {
     menuClass () {
       const classList = [
         {
-          'cat-menu--horizontal': this.mode === 'horizontal'
+          'cat-menu--horizontal': this.mode === 'horizontal',
+          'cat-menu--collapse': this.collapse
         }
       ]
       return classList
@@ -77,7 +90,10 @@ export default {
         this.openedMenus = value
       }
     },
-    collapse (value) {}
+    collapse (value) {
+      if (value) this.openedMenus = []
+      this.broadcast('CatSubmenu', 'toggle-collapse', value)
+    }
   },
   methods: {
     updateActiveIndex (val) {
@@ -87,6 +103,13 @@ export default {
         this.initOpenedMenu()
       } else {
         this.activeIndex = null
+      }
+    },
+    getMigratingConfig () {
+      return {
+        props: {
+          theme: 'theme is removed.'
+        }
       }
     },
     getColorChannels (color) {
@@ -142,6 +165,11 @@ export default {
       if (openedMenus.indexOf(index) !== -1) {
         return
       }
+      if (this.uniqueOpeneds) {
+        this.openedMenus = this.openedMenus.filter(index => {
+          return indexPath.indexOf(index) !== -1
+        })
+      }
       this.openedMenus.push(index)
     },
     closeMenu (index) {
@@ -150,10 +178,20 @@ export default {
         this.openedMenus.splice(i, 1)
       }
     },
-    handleSubmenuClick (submenu) {},
+    handleSubmenuClick (submenu) {
+      const { index, indexPath } = submenu
+      const isOpened = this.openedMenus.indexOf(index) !== -1
+      if (isOpened) {
+        this.closeMenu(index)
+        this.$emit('close', index, indexPath)
+      } else {
+        this.openMenu(index, indexPath)
+        this.$emit('open', index, indexPath)
+      }
+    },
     handleItemClick (item) {
       const { index, indexPath } = item
-      // const oldActiveIndex = this.activeIndex
+      const oldActiveIndex = this.activeIndex
       const hasIndex = item.index !== null
 
       if (hasIndex) {
@@ -164,6 +202,16 @@ export default {
 
       if (this.mode === 'horizontal' || this.collapse) {
         this.openedMenus = []
+      }
+
+      if (this.router && hasIndex) {
+        this.routeToItem(item, error => {
+          this.activeIndex = oldActiveIndex
+          if (error) {
+            if (error.name === 'NavigationDuplicated') return
+            console.log(error)
+          }
+        })
       }
     },
     initOpenedMenu () {
@@ -178,9 +226,21 @@ export default {
         submenu && this.openMenu(index, submenu.indexPath)
       })
     },
-    routeToItem (item, onError) {},
-    open (index) {},
-    close (index) {}
+    routeToItem (item, onError) {
+      const route = item.route || item.index
+      try {
+        this.$router.push(route, () => {}, onError)
+      } catch (e) {
+        console.log(e)
+      }
+    },
+    open (index) {
+      const { indexPath } = this.submenus[index.toString()]
+      indexPath.forEach(i => this.openMenu(i, indexPath))
+    },
+    close (index) {
+      this.closeMenu(index)
+    }
   },
   mounted () {
     this.initOpenedMenu()

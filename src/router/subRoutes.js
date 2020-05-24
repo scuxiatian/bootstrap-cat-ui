@@ -4,7 +4,8 @@ const subRoutes = [
     name: 'LayoutApi',
     component: () => import('@/views/LayoutApi'),
     meta: {
-      title: '栅格布局'
+      title: 'Layout 栅格布局',
+      group: 0
     }
   },
   {
@@ -12,7 +13,8 @@ const subRoutes = [
     name: 'IconApi',
     component: () => import('@/views/IconApi'),
     meta: {
-      title: '图标'
+      title: 'Icon 图标',
+      group: 0
     }
   },
   {
@@ -20,7 +22,8 @@ const subRoutes = [
     name: 'ButtonApi',
     component: () => import('@/views/ButtonApi'),
     meta: {
-      title: '按钮'
+      title: 'Button 按钮',
+      group: 0
     }
   },
   {
@@ -28,7 +31,17 @@ const subRoutes = [
     name: 'LinkApi',
     component: () => import('@/views/LinkApi'),
     meta: {
-      title: '链接'
+      title: 'Link 链接',
+      group: 0
+    }
+  },
+  {
+    path: 'table',
+    name: 'TableApi',
+    component: () => import('@/views/TableApi'),
+    meta: {
+      title: 'Table 表格',
+      group: 3
     }
   },
   {
@@ -36,7 +49,8 @@ const subRoutes = [
     name: 'MenuApi',
     component: () => import('@/views/MenuApi'),
     meta: {
-      title: '导航菜单'
+      title: '导航菜单',
+      group: 4
     }
   }
 ]

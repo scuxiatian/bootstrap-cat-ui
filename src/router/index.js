@@ -10,11 +10,6 @@ const routes = [
     name: 'Home',
     component: () => import('@/views/Home'),
     children: subRoutes
-  },
-  {
-    path: '/test',
-    name: 'Test',
-    component: () => import('@/views/Test')
   }
 ]
 

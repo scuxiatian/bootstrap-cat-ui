@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import Menu from './menu-mixins'
+import Menu from './menu-mixin'
 import Emitter from '../utils/mixins/emitter'
 
 export default {

@@ -1,16 +1,17 @@
 <template>
   <cat-row class="home" :gutter="10">
-    <cat-col :span="3">
-      <ul class="cat-menu">
-        <!-- <li class="nav-item">
-          <router-link class="nav-link active" to="/test">Test</router-link>
-        </li> -->
-        <li class="nav-item" v-for="route in routes" :key="route.name">
-          <router-link class="nav-link" :to="route.path">{{ route.meta.title }}</router-link>
-        </li>
-      </ul>
+    <cat-col :span="4">
+      <cat-menu router>
+        <cat-menu-item-group v-for="(group, index) of routes" :key="index" :title="groups[index]">
+          <template v-if="group">
+            <cat-menu-item v-for="route in group" :key="route.name" :index="route.path">
+              {{ route.meta.title }}
+            </cat-menu-item>
+          </template>
+        </cat-menu-item-group>
+      </cat-menu>
     </cat-col>
-    <cat-col :span="21">
+    <cat-col :span="20">
       <router-view />
     </cat-col>
   </cat-row>
@@ -23,7 +24,21 @@ export default {
   name: 'Home',
   data () {
     return {
-      routes
+      routes: this.groupRoutes(routes),
+      groups: ['Basic', 'Form', 'Data', 'Notice', 'Navigation']
+    }
+  },
+  methods: {
+    groupRoutes (routes) {
+      const result = []
+      routes.forEach(route => {
+        const group = route.meta.group
+        if (!result[group]) {
+          result[group] = []
+        }
+        result[group].push(route)
+      })
+      return result
     }
   }
 }

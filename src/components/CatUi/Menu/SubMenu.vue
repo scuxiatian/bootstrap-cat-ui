@@ -9,41 +9,47 @@
       role="submenu-title"
       @mouseenter="handleTitleMouseEnter"
       @mouseleave="handleTitleMouseLeave"
+      @click="handleClick"
       :style="[paddingStyle, titleStyle, {backgroundColor}]">
-        <slot name="title"></slot>
-        <i class="cat-submenu__icon-arrow" :class="submenuTitleIcon"></i>
-      </div>
+      <slot name="title"></slot>
+      <i class="cat-submenu__icon-arrow" :class="submenuTitleIcon"></i>
+    </div>
     <template v-if="isMenuPopup">
-      <div ref="menu"
-        v-show="opened"
-        :class="[`cat-menu--${mode}`, popperClass]"
-        @mouseenter="handleMouseEnter($event, 100)"
-        @mouseleave="handleMouseLeave(true)"
-        @focus="handleMouseEnter($event, 100)"
-        >
+      <transition :name="menuTransitionName">
+        <div ref="menu"
+          v-show="opened"
+          :class="[`cat-menu--${mode}`, popperClass]"
+          @mouseenter="handleMouseEnter($event, 100)"
+          @mouseleave="handleMouseLeave(true)"
+          @focus="handleMouseEnter($event, 100)"
+          >
+          <ul role="menu"
+            class="cat-menu cat-menu--popup"
+            :class="`cat-menu--popup-${currentPlacement}`"
+            :style="{ backgroundColor: rootMenu.backgroundColor || '' }">
+            <slot></slot>
+          </ul>
+        </div>
+      </transition>
+    </template>
+    <template v-else>
+      <cat-collapse-transition>
         <ul role="menu"
-          class="cat-menu cat-menu--popup"
-          :class="`cat-menu--popup-${currentPlacement}`"
+          class="cat-menu cat-menu--inline"
+          v-show="opened"
           :style="{ backgroundColor: rootMenu.backgroundColor || '' }">
           <slot></slot>
         </ul>
-      </div>
-    </template>
-    <template v-else>
-      <ul role="menu"
-        class="cat-menu cat-menu--inline"
-        v-show="opened"
-        :style="{ backgroundColor: rootMenu.backgroundColor || '' }">
-        <slot></slot>
-      </ul>
+      </cat-collapse-transition>
     </template>
   </li>
 </template>
 
 <script>
-import Menu from './menu-mixins'
+import Menu from './menu-mixin'
 import Emitter from '../utils/mixins/emitter'
-import Popper from '../utils/vue-popup'
+import Popper from '../utils/vue-popper'
+import CatCollapseTransition from '../utils/transitions/collapse-transition'
 
 const poperMixins = {
   props: {
@@ -64,6 +70,9 @@ const poperMixins = {
 export default {
   name: 'CatSubmenu',
   componentName: 'CatSubmenu',
+  components: {
+    CatCollapseTransition
+  },
   mixins: [Menu, Emitter, poperMixins],
   props: {
     index: {
@@ -107,6 +116,9 @@ export default {
     appendToBody () {
       return this.popperAppendToBody === undefined ? this.isFirstLevel : this.popperAppendToBody
     },
+    menuTransitionName () {
+      return this.rootMenu.collapse ? 'cat-zoom-in-left' : 'cat-zoom-in-top'
+    },
     opened () {
       return this.rootMenu.openedMenus.indexOf(this.index) > -1
     },
@@ -132,7 +144,7 @@ export default {
     subMenuClass () {
       const classList = [
         {
-          'is-opended': this.opened,
+          'is-opened': this.opened,
           'is-active': this.active,
           'is-disabled': this.disabled
         }
@@ -189,6 +201,13 @@ export default {
     }
   },
   methods: {
+    handleCollapseToggle (value) {
+      if (value) {
+        this.initPopup()
+      } else {
+        this.doDestroy()
+      }
+    },
     addItem (item) {
       this.$set(this.items, item.index, item)
     },
@@ -201,12 +220,23 @@ export default {
     removeSubmenu (item) {
       delete this.submenus[item.index]
     },
+    handleClick () {
+      const { rootMenu, disabled } = this
+      if (
+        (rootMenu.menuTrigger === 'hover' && rootMenu.mode === 'horizontal') ||
+          (rootMenu.collapse && rootMenu.mode === 'vertical') ||
+          disabled
+      ) return
+      this.dispatch('CatMenu', 'submenu-click', this)
+    },
     handleMouseEnter (event, showTimeout = this.showTimeout) {
       if (!('ActiveXObject' in window) && event.type === 'focus' && !event.relatedTarget) {
         return
       }
       const { rootMenu, disabled } = this
-      if (disabled) {
+      if ((rootMenu.menuTrigger === 'click' && rootMenu.mode === 'horizontal') ||
+          (!rootMenu.collapse && rootMenu.mode === 'vertical') ||
+          disabled) {
         return
       }
       this.dispatch('CatSubmenu', 'mouse-enter-child')
@@ -222,6 +252,12 @@ export default {
     },
     handleMouseLeave (deepDispatch = false) {
       const { rootMenu } = this
+      if (
+        (rootMenu.menuTrigger === 'click' && rootMenu.mode === 'horizontal') ||
+          (!rootMenu.collapse && rootMenu.mode === 'vertical')
+      ) {
+        return
+      }
       this.dispatch('CatSubmenu', 'mouse-leave-child')
 
       clearTimeout(this.timeout)
@@ -255,6 +291,7 @@ export default {
     }
   },
   created () {
+    this.$on('toggle-collapse', this.handleCollapseToggle)
     this.$on('mouse-enter-child', () => {
       this.mouseInChild = true
       clearTimeout(this.timeout)
