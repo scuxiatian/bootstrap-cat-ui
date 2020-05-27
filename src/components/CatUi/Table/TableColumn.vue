@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { cellStarts, cellForced } from './config'
+import { cellStarts, cellForced, defaultRenderCell, treeCellPrefix } from './config'
 import { mergeOptions, parseWidth, parseMinWidth, compose } from './util'
 
 let columnIdSeed = -1
@@ -64,6 +64,11 @@ export default {
         return prev
       }, {})
     },
+
+    getColumnElIndex (children, child) {
+      return [].indexOf.call(children, child)
+    },
+
     setColumnWidth (column) {
       if (this.realWidth) {
         column.width = this.realWidth
@@ -99,6 +104,91 @@ export default {
           return renderHeader ? renderHeader(scope) : column.label
         }
       }
+
+      let originRenderCell = column.renderCell
+      if (column.type === 'expand') {
+        column.renderCell = (h, data) => (
+          <div class="cell">
+            { originRenderCell(h, data) }
+          </div>
+        )
+        this.owner.renderExpanded = (h, data) => {
+          return this.$scopedSlots.default
+            ? this.$scopedSlots.default(data)
+            : this.$slots.default
+        }
+      } else {
+        originRenderCell = originRenderCell || defaultRenderCell
+        column.renderCell = (h, data) => {
+          let children = null
+          if (this.$scopedSlots.default) {
+            children = this.$scopedSlots.default(data)
+          } else {
+            children = originRenderCell(h, data)
+          }
+          const prefix = treeCellPrefix(h, data)
+          const props = {
+            class: 'cell',
+            style: { width: (data.column.realWidth || data.column.width) - 1 + 'px' }
+          }
+          if (column.showOverflowToolTip) {
+            props.class += 'cat-tooltip'
+            props.style = { width: (data.column.realWidth || data.column.width) - 1 + 'px' }
+          }
+          return (
+            <div { ...props }>
+              { prefix }
+              { children }
+            </div>
+          )
+        }
+      }
+      return column
+    },
+
+    registerNormalWatchers () {
+      const props = ['label', 'property', 'filters', 'filterMultiple', 'sortable', 'index', 'formatter', 'className', 'labelClassName', 'showOverflowTooltip']
+      // 一些属性具有别名
+      const aliases = {
+        props: 'property',
+        realAlign: 'align',
+        realHeaderAlign: 'headerAlign',
+        realWidth: 'width'
+      }
+      const allAliases = props.reduce((prev, cur) => {
+        prev[cur] = cur
+        return prev
+      }, aliases)
+
+      Object.keys(allAliases).forEach(key => {
+        const columnKey = aliases[key]
+
+        this.$watch(key, (newVal) => {
+          this.columnConfig[columnKey] = newVal
+        })
+      })
+    },
+
+    registerComplexWatchers () {
+      const props = ['fixed']
+      const aliases = {
+        realWidth: 'width',
+        realMinWidth: 'minWidth'
+      }
+      const allAliases = props.reduce((prev, cur) => {
+        prev[cur] = cur
+        return prev
+      }, aliases)
+
+      Object.keys(allAliases).forEach(key => {
+        const columnKey = aliases[key]
+
+        this.$watch(key, (newVal) => {
+          this.columnConfig[columnKey] = newVal
+          const updateColumns = columnKey === 'fixed'
+          this.owner.store.scheduleLayout(updateColumns)
+        })
+      })
     }
   },
   beforeCreate () {
@@ -146,6 +236,23 @@ export default {
     column = chains(column)
 
     this.columnConfig = column
+    // 注册 watcher
+    this.registerNormalWatchers()
+    this.registerComplexWatchers()
+  },
+  mounted () {
+    const owner = this.owner
+    const parent = this.columnOrTableParent
+    const children = this.isSubColumn ? parent.$el.children : parent.$refs.hiddenColumns.children
+    const columnIndex = this.getColumnElIndex(children, this.$el)
+
+    owner.store.commit('insertColumn', this.columnConfig, columnIndex)
+  },
+
+  destroyed () {
+    // if (!this.$parent) return
+    // const parent = this.$parent
+    // this.owner.store.commit('removeColumn', this.columnConfig, this)
   }
 }
 </script>

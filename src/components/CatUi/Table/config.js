@@ -104,20 +104,20 @@ export function treeCellPrefix (h, { row, treeNode, store }) {
     store.loadOrToggle(row)
   }
   if (treeNode.indent) {
-    ele.push(<span class="el-table__indent" style={{ 'padding-left': treeNode.indent + 'px' }}></span>)
+    ele.push(<span class="cat-table__indent" style={{ 'padding-left': treeNode.indent + 'px' }}></span>)
   }
   if (typeof treeNode.expanded === 'boolean' && !treeNode.noLazyChildren) {
-    const expandClasses = ['el-table__expand-icon', treeNode.expanded ? 'el-table__expand-icon--expanded' : '']
-    let iconClasses = ['el-icon-arrow-right']
+    const expandClasses = ['cat-table__expand-icon', treeNode.expanded ? 'cat-table__expand-icon--expanded' : '']
+    let iconClasses = ['cat-icon-arrow-right']
     if (treeNode.loading) {
-      iconClasses = ['el-icon-loading']
+      iconClasses = ['cat-icon-loading']
     }
     ele.push(<div class={ expandClasses }
       on-click={ callback }>
       <i class={ iconClasses }></i>
     </div>)
   } else {
-    ele.push(<span class="el-table__placeholder"></span>)
+    ele.push(<span class="cat-table__placeholder"></span>)
   }
   return ele
 }
