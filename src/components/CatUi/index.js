@@ -8,6 +8,8 @@ import Menu from './Menu'
 import MenuItem from './Menu/MenuItem.vue'
 import Submenu from './Menu/Submenu.vue'
 import MenuItemGroup from './Menu/MenuItemGroup'
+import Table from './Table/Table.vue'
+import TableColumn from './Table/TableColumn.vue'
 
 Vue.component('cat-row', Row)
 Vue.component('cat-col', Col)
@@ -18,3 +20,5 @@ Vue.component('cat-menu', Menu)
 Vue.component('cat-menu-item', MenuItem)
 Vue.component('cat-submenu', Submenu)
 Vue.component('cat-menu-item-group', MenuItemGroup)
+Vue.component('cat-table', Table)
+Vue.component('cat-table-column', TableColumn)

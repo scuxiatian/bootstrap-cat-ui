@@ -1,4 +1,4 @@
-import { getValueByPath } from '..utils/util'
+import { getValueByPath } from '../utils/util'
 
 export const getCell = function (event) {
   let cell = event.target
