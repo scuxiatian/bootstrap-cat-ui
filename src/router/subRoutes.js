@@ -41,7 +41,7 @@ const subRoutes = [
     component: () => import('@/views/TableApi'),
     meta: {
       title: 'Table 表格',
-      group: 3
+      group: 2
     }
   },
   {

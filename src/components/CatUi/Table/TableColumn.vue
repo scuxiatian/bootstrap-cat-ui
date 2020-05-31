@@ -8,7 +8,7 @@
 import { cellStarts, cellForced, defaultRenderCell, treeCellPrefix } from './config'
 import { mergeOptions, parseWidth, parseMinWidth, compose } from './util'
 
-let columnIdSeed = -1
+let columnIdSeed = 1
 
 export default {
   name: 'CatTableColumn',
@@ -122,6 +122,7 @@ export default {
       column.realWidth = column.width === undefined ? column.minWidth : column.width
       return column
     },
+
     setColumnForcedProps (column) {
       // 对于特定类型的 column，某些属性不允许设置
       const type = column.type
@@ -134,6 +135,7 @@ export default {
       })
       return column
     },
+
     setColumnRenders (column) {
       // renderHeader 属性不推荐使用。
       if (this.renderHeader) {
@@ -231,12 +233,14 @@ export default {
       })
     }
   },
+
   beforeCreate () {
     this.row = {}
     this.column = {}
     this.$index = 0
     this.columnId = ''
   },
+
   created () {
     const parent = this.columnOrTableParent
     this.isSubColumn = this.owner !== parent
@@ -280,6 +284,7 @@ export default {
     this.registerNormalWatchers()
     this.registerComplexWatchers()
   },
+
   mounted () {
     const owner = this.owner
     const parent = this.columnOrTableParent

@@ -1,18 +1,14 @@
 <template>
   <div>
     <h4 class="show-title">{{ title }} {{ config[type].title }}</h4>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <td v-for="head of config[type].heads" :key="head">{{ head }}</td>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(row, index) of data" :key="index">
-          <td v-for="(col, colIndex) of row" :key="colIndex">{{ col }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <cat-table :data="data">
+      <cat-table-column
+        v-for="(head, index) of config[type].heads"
+        :key="head"
+        :label="head"
+        :prop="index.toString()">
+      </cat-table-column>
+    </cat-table>
   </div>
 </template>
 
