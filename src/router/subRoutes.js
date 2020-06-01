@@ -36,6 +36,15 @@ const subRoutes = [
     }
   },
   {
+    path: 'radio',
+    name: 'RadioApi',
+    component: () => import('@/views/RadioApi'),
+    meta: {
+      title: 'Radio 单选框',
+      group: 1
+    }
+  },
+  {
     path: 'table',
     name: 'TableApi',
     component: () => import('@/views/TableApi'),
