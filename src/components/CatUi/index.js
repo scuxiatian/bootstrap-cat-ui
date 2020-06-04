@@ -6,7 +6,10 @@ import ButtonGroup from './Button/ButtonGroup.vue'
 import Link from './Link'
 
 import Radio from './Radio/Radio.vue'
+import RadioButton from './Radio/RadioButton.vue'
 import RadioGroup from './Radio/RadioGroup.vue'
+import Checkbox from './Checkbox/Checkbox.vue'
+import CheckboxGroup from './Checkbox/CheckboxGroup.vue'
 
 import Menu from './Menu'
 import MenuItem from './Menu/MenuItem.vue'
@@ -22,7 +25,10 @@ Vue.component('cat-button-group', ButtonGroup)
 Vue.component('cat-link', Link)
 
 Vue.component('cat-radio', Radio)
+Vue.component('cat-radio-button', RadioButton)
 Vue.component('cat-radio-group', RadioGroup)
+Vue.component('cat-checkbox', Checkbox)
+Vue.component('cat-checkbox-group', CheckboxGroup)
 
 Vue.component('cat-table', Table)
 Vue.component('cat-table-column', TableColumn)

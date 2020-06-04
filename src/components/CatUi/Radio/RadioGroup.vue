@@ -40,8 +40,8 @@ export default {
   },
 
   computed: {
-    _elFormItemSize () {
-      return (this.elFormItem || {}).elFormItemSize
+    _catFormItemSize () {
+      return (this.catFormItem || {}).catFormItemSize
     },
 
     _elTag () {
@@ -49,7 +49,7 @@ export default {
     },
 
     radioGroupSize () {
-      return this.size || this._elFormItemSize || (this.$ELEMENT || {}).size
+      return this.size || this._catFormItemSize
     }
   },
 

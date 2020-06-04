@@ -2,10 +2,15 @@
   <label
     class="cat-radio"
     :class="[
+      border && radioSize ? `cat-radio--${radioSize}` : '',
+      { 'is-focus': focus },
+      { 'is-bordered': border },
       { 'is-disabled': isDisabled },
       { 'is-checked': model === label }
     ]"
-    role="radio">
+    role="radio"
+    :tabindex="tabIndex"
+    @keydown.space.stop.prevent="model = isDisabled ? model : label">
     <span class="cat-radio__input"
       :class="[
         { 'is-disabled': isDisabled },
@@ -18,7 +23,10 @@
           :value="label"
           type="radio"
           v-model="model"
+          @focus="focus = true"
+          @blur="focus = false"
           @change="handleChange"
+          :name="name"
           :disabled="isDisabled"
           tabindex="-1">
       </span>
@@ -57,6 +65,12 @@ export default {
     size: String
   },
 
+  data () {
+    return {
+      focus: false
+    }
+  },
+
   computed: {
     model: {
       get () {
@@ -72,10 +86,25 @@ export default {
       }
     },
 
+    _catFormItemSize () {
+      return (this.catFormItem || {}).catFormItemSize
+    },
+
+    radioSize () {
+      const temRadioSize = this.size || this._catFormItemSize
+      return this._isGroup
+        ? this._radioGroup.radioGroupSize || temRadioSize
+        : temRadioSize
+    },
+
     isDisabled () {
-      return this.isGroup
-        ? this._radioGroup.disabled || this.disabled || (this.elForm || {}).disabled
-        : this.disabled || (this.elForm || {}).disabled
+      return this._isGroup
+        ? this._radioGroup.disabled || this.disabled || (this.catForm || {}).disabled
+        : this.disabled || (this.catForm || {}).disabled
+    },
+
+    tabIndex () {
+      return (this.isDisabled || (this.isGroup && this.model !== this.label)) ? -1 : 0
     }
   },
 
@@ -83,7 +112,7 @@ export default {
     handleChange () {
       this.$nextTick(() => {
         this.$emit('change', this.model)
-        this.isGroup && this.dispatch('CatRadioGroup', 'handleChange', this)
+        this._isGroup && this.dispatch('CatRadioGroup', 'handleChange', this.model)
       })
     }
   },

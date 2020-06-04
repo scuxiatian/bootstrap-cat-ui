@@ -45,6 +45,15 @@ const subRoutes = [
     }
   },
   {
+    path: 'checkbox',
+    name: 'CheckboxApi',
+    component: () => import('@/views/CheckboxApi'),
+    meta: {
+      title: 'Checkbox 多选框',
+      group: 1
+    }
+  },
+  {
     path: 'table',
     name: 'TableApi',
     component: () => import('@/views/TableApi'),

@@ -1,0 +1,82 @@
+<template>
+  <view-page title="Checkbox 多选框" desc="一组备选项中进行多选">
+    <show-box :config="checkboxBaseConfig">
+      <checkbox-base></checkbox-base>
+    </show-box>
+    <show-box :config="checkboxDisabledConfig">
+      <checkbox-disabled></checkbox-disabled>
+    </show-box>
+    <show-box :config="checkboxCustomValueConfig">
+      <checkbox-custom-value></checkbox-custom-value>
+    </show-box>
+    <show-box :config="checkboxGroupConfig">
+      <checkbox-group></checkbox-group>
+    </show-box>
+    <show-box :config="checkboxIndeterminateConfig">
+      <checkbox-indeterminate></checkbox-indeterminate>
+    </show-box>
+    <show-box>
+      <checkbox-limit></checkbox-limit>
+    </show-box>
+  </view-page>
+</template>
+
+<script>
+import CheckboxBase from './components/CheckboxBase'
+import CheckboxDisabled from './components/CheckboxDisabled'
+import CheckboxCustomValue from './components/CheckboxCustomValue'
+import CheckboxGroup from './components/CheckboxGroup'
+import CheckboxIndeterminate from './components/CheckboxIndeterminate'
+import CheckboxLimit from './components/CheckboxLimit'
+import code from './code'
+
+export default {
+  name: 'CheckboxApi',
+  components: {
+    CheckboxBase,
+    CheckboxDisabled,
+    CheckboxCustomValue,
+    CheckboxGroup,
+    CheckboxIndeterminate,
+    CheckboxLimit
+  },
+  data () {
+    return {
+      checkboxBaseConfig: {
+        title: '基础用法',
+        desc: '单独使用可以表示两种状态之间的切换，写在标签中的内容为 checkbox 按钮后的介绍。',
+        code: code.baseCode,
+        codeDesc: '在 cat-checkbox 元素中定义 v-model 绑定变量，单一的 checkbox 中，默认绑定变量的值会是 Boolean ，选中为 true。'
+      },
+      checkboxDisabledConfig: {
+        title: '禁用状态',
+        desc: '多选框不可用状态。',
+        code: code.disabledCode,
+        codeDesc: '设置 disabled 属性即可。'
+      },
+      checkboxCustomValueConfig: {
+        title: '自定义值',
+        desc: '自定义选中 / 未选中时 checkbox 的 value',
+        code: code.customValueCode,
+        codeDesc: '设置 true-label 与 false-label 属性。'
+      },
+      checkboxGroupConfig: {
+        title: '多选框组',
+        desc: '适用于多个勾选框绑定到同一个数组的情景，通过是否勾选来表示这一组选项中选中的项。',
+        code: code.groupCode,
+        codeDesc: 'checkbox-group 元素能把多个 checkbox 管理为一组，只需要在 Group 中使用v-model绑定 Array 类型的变量即可。 cat-checkbox 的 label 属性是该 checkbox 对应的值，若该标签中无内容，则该属性也充当 checkbox 按钮后的介绍。label与数组中的元素值相对应，如果存在指定的值则为选中状态，否则为不选中。'
+      },
+      checkboxIndeterminateConfig: {
+        title: 'indeterminate 状态',
+        desc: 'indeterminate 属性用以表示 checkbox 的不确定状态，一般用于实现全选的效果',
+        code: code.indeterminateCode
+      },
+      checkboxLimitConfig: {
+        title: '可选项目数量的限制',
+        desc: '使用 min 和 max 属性能够限制可以被勾选的项目的数量。',
+        code: code.limitCode
+      }
+    }
+  }
+}
+</script>
