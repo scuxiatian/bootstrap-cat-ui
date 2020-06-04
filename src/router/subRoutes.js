@@ -54,6 +54,15 @@ const subRoutes = [
     }
   },
   {
+    path: 'input',
+    name: 'InputApi',
+    component: () => import('@/views/InputApi'),
+    meta: {
+      title: 'Input 输入框',
+      group: 1
+    }
+  },
+  {
     path: 'table',
     name: 'TableApi',
     component: () => import('@/views/TableApi'),

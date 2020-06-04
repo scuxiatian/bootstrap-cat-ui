@@ -137,7 +137,7 @@ const buttonCode = `
       </cat-checkbox-group>
     </div>
     <div style="margin-top: 20px">
-      <cat-checkbox-group v-model="checkboxGroup2" size="medium">
+      <cat-checkbox-group v-model="checkboxGroup2" size="medium" fill="#545c64" textColor="#ffd04b">
         <cat-checkbox-button v-for="city in cities" :label="city" :key="city">{{city}}</cat-checkbox-button>
       </cat-checkbox-group>
     </div>
