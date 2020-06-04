@@ -34,6 +34,16 @@ export default {
     value (value) {
       this.dispatch('CatFormItem', 'el.form.change', [value])
     }
+  },
+
+  computed: {
+    _catFormItemSize () {
+      return (this.catFormItem || {}).catFormItemSize
+    },
+
+    checkboxGroupSize () {
+      return this.size || this._catFormItemSize || (this.$CAT || {}).size
+    }
   }
 }
 </script>

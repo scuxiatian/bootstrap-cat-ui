@@ -128,11 +128,97 @@ export default {
 </script>
 `
 
+const buttonCode = `
+<template>
+  <div>
+    <div>
+      <cat-checkbox-group v-model="checkboxGroup1">
+        <cat-checkbox-button v-for="city in cities" :label="city" :key="city">{{city}}</cat-checkbox-button>
+      </cat-checkbox-group>
+    </div>
+    <div style="margin-top: 20px">
+      <cat-checkbox-group v-model="checkboxGroup2" size="medium">
+        <cat-checkbox-button v-for="city in cities" :label="city" :key="city">{{city}}</cat-checkbox-button>
+      </cat-checkbox-group>
+    </div>
+    <div style="margin-top: 20px">
+      <cat-checkbox-group v-model="checkboxGroup3" size="small">
+        <cat-checkbox-button v-for="city in cities" :label="city" :disabled="city === '北京'" :key="city">{{city}}</cat-checkbox-button>
+      </cat-checkbox-group>
+    </div>
+    <div style="margin-top: 20px">
+      <cat-checkbox-group v-model="checkboxGroup4" size="mini" disabled>
+        <cat-checkbox-button v-for="city in cities" :label="city" :key="city">{{city}}</cat-checkbox-button>
+      </cat-checkbox-group>
+    </div>
+  </div>
+</template>
+
+<script>
+const cityOptions = ['上海', '北京', '广州', '深圳']
+export default {
+  data () {
+    return {
+      checkboxGroup1: ['上海'],
+      checkboxGroup2: ['上海'],
+      checkboxGroup3: ['上海'],
+      checkboxGroup4: ['上海'],
+      cities: cityOptions
+    }
+  }
+}
+</script>
+`
+
+const borderCode = `
+<template>
+  <div>
+    <div>
+      <cat-checkbox v-model="checked1" label="备选项1" border></cat-checkbox>
+      <cat-checkbox v-model="checked2" label="备选项2" border></cat-checkbox>
+    </div>
+    <div style="margin-top: 20px">
+      <cat-checkbox v-model="checked3" label="备选项1" border size="medium"></cat-checkbox>
+      <cat-checkbox v-model="checked4" label="备选项2" border size="medium"></cat-checkbox>
+    </div>
+    <div style="margin-top: 20px">
+      <cat-checkbox-group v-model="checkboxGroup1" size="small">
+        <cat-checkbox label="备选项1" border></cat-checkbox>
+        <cat-checkbox label="备选项2" border disabled></cat-checkbox>
+      </cat-checkbox-group>
+    </div>
+    <div style="margin-top: 20px">
+      <cat-checkbox-group v-model="checkboxGroup2" size="mini" disabled>
+        <cat-checkbox label="备选项1" border></cat-checkbox>
+        <cat-checkbox label="备选项2" border></cat-checkbox>
+      </cat-checkbox-group>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data () {
+    return {
+      checked1: true,
+      checked2: false,
+      checked3: false,
+      checked4: true,
+      checkboxGroup1: [],
+      checkboxGroup2: []
+    }
+  }
+}
+</script>
+`
+
 export default {
   baseCode,
   disabledCode,
   customValueCode,
   groupCode,
   indeterminateCode,
-  limitCode
+  limitCode,
+  buttonCode,
+  borderCode
 }

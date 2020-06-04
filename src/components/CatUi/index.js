@@ -10,6 +10,7 @@ import RadioButton from './Radio/RadioButton.vue'
 import RadioGroup from './Radio/RadioGroup.vue'
 import Checkbox from './Checkbox/Checkbox.vue'
 import CheckboxGroup from './Checkbox/CheckboxGroup.vue'
+import CheckBoxButton from './Checkbox/CheckboxButton.vue'
 
 import Menu from './Menu'
 import MenuItem from './Menu/MenuItem.vue'
@@ -37,3 +38,11 @@ Vue.component('cat-menu', Menu)
 Vue.component('cat-menu-item', MenuItem)
 Vue.component('cat-submenu', Submenu)
 Vue.component('cat-menu-item-group', MenuItemGroup)
+
+const components = [
+  CheckBoxButton
+]
+
+components.forEach(component => {
+  Vue.component(component.componentName, component)
+})

@@ -2,7 +2,9 @@
   <label
     class="cat-checkbox"
     :class="[
+      border && checkboxSize ? `cat-checkbox--${checkboxSize}` : '',
       { 'is-disabled': isDisabled },
+      { 'is-bordered': border },
       { 'is-checked': isChecked }]"
     :id="id">
     <span class="cat-checkbox__input"
@@ -31,9 +33,9 @@
         v-else
         class="cat-checkbox__original"
         type="checkbox"
+        :disabled="isDisabled"
         :value="label"
         :name="name"
-        :disabled="isDisabled"
         v-model="model"
         @change="handleChange"
         @focus="focus = true"
@@ -138,6 +140,17 @@ export default {
       return this._isGroup
         ? this._checkboxGroup.disabled || this.disabled || (this.catForm || {}).disabled || this.isLimitDisabled
         : this.disabled || (this.catForm || {}).disabled
+    },
+
+    _catFormItemSize () {
+      return (this.catFormItem || {}).catFormItemSize
+    },
+
+    checkboxSize () {
+      const temCheckboxSize = this.size || this._catFormItemSize || (this.$CAT || {}).size
+      return this._isGroup
+        ? this._checkboxGroup.checkboxGroupSize || temCheckboxSize
+        : temCheckboxSize
     }
   },
 

@@ -15,8 +15,14 @@
     <show-box :config="checkboxIndeterminateConfig">
       <checkbox-indeterminate></checkbox-indeterminate>
     </show-box>
-    <show-box>
+    <show-box :config="checkboxLimitConfig">
       <checkbox-limit></checkbox-limit>
+    </show-box>
+    <show-box :config="checkboxButtonConfig">
+      <checkbox-button></checkbox-button>
+    </show-box>
+    <show-box :config="checkboxBorderConfig">
+      <checkbox-border></checkbox-border>
     </show-box>
   </view-page>
 </template>
@@ -28,6 +34,8 @@ import CheckboxCustomValue from './components/CheckboxCustomValue'
 import CheckboxGroup from './components/CheckboxGroup'
 import CheckboxIndeterminate from './components/CheckboxIndeterminate'
 import CheckboxLimit from './components/CheckboxLimit'
+import CheckboxButton from './components/CheckboxButton'
+import CheckboxBorder from './components/CheckboxBorder'
 import code from './code'
 
 export default {
@@ -38,7 +46,9 @@ export default {
     CheckboxCustomValue,
     CheckboxGroup,
     CheckboxIndeterminate,
-    CheckboxLimit
+    CheckboxLimit,
+    CheckboxButton,
+    CheckboxBorder
   },
   data () {
     return {
@@ -75,6 +85,17 @@ export default {
         title: '可选项目数量的限制',
         desc: '使用 min 和 max 属性能够限制可以被勾选的项目的数量。',
         code: code.limitCode
+      },
+      checkboxButtonConfig: {
+        title: '按钮样式',
+        desc: '按钮样式的多选组合。',
+        code: code.buttonCode,
+        codeDesc: '只需要把 cat-checkbox 元素替换为 cat-checkbox-button 元素即可。此外，还提供了size属性。'
+      },
+      checkboxBorderConfig: {
+        title: '带有边框',
+        code: code.borderCode,
+        codeDesc: '设置 border 属性可以渲染为带有边框的多选框。'
       }
     }
   }

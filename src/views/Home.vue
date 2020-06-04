@@ -11,7 +11,7 @@
         </cat-menu-item-group>
       </cat-menu>
     </cat-col>
-    <cat-col :span="20">
+    <cat-col :span="20" class="content">
       <router-view />
     </cat-col>
   </cat-row>
@@ -48,5 +48,8 @@ export default {
 .home {
   width: 100%;
   margin: 0;
+}
+.content {
+  overflow: auto;
 }
 </style>
