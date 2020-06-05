@@ -1,22 +1,87 @@
 <template>
-  <div :class="[
-    type === 'textarea' ? 'cat-textarea' : 'cat-input'
-  ]">
+  <div
+    @mouseenter="hoving = true"
+    @mouseleave="hoving = false"
+    :class="[
+      type === 'textarea' ? 'cat-textarea' : 'cat-input',
+      {
+        'is-disabled': inputDisabled,
+        'cat-input-group': $slots.prepend || $slots.append,
+        'cat-input-group--append': $slots.append,
+        'cat-input-group--prepend': $slots.prepend,
+        'cat-input--prefix': $slots.prefix || prefixIcon,
+        'cat-input--suffix': $slots.suffix || suffixIcon || clearable || showPassword
+      }
+    ]">
     <template v-if="type !== 'textarea'">
+      <!-- 前置元素 -->
+      <div class="cat-input-group__prepend" v-if="$slots.prepend">
+        <slot name="prepend"></slot>
+      </div>
       <input
         class="cat-input__inner"
         v-bind="$attrs"
+        :type="showPassword ? (passwordVisible ? 'text' : 'password') : type"
+        :disabled = inputDisabled
         ref="input"
-        @input="handleInput">
+        @input="handleInput"
+        @focus="handleFocus"
+        @blur="handleBlur">
+      <!-- 前置内容 -->
+      <span class="cat-input__prefix" v-if="$slots.prefix || prefixIcon">
+        <slot name="prefix"></slot>
+        <i class="cat-input__icon" v-if="prefixIcon" :class="prefixIcon"></i>
+      </span>
+      <!-- 后置内容 -->
+      <span
+        class="cat-input__suffix"
+        v-if="getSuffixVisible()">
+        <span class="cat-input__suffix-inner">
+          <template v-if="!showClear || !showPwdVisible">
+            <slot name="suffix"></slot>
+            <i class="cat-input__icon" v-if="suffixIcon" :class="suffixIcon"></i>
+          </template>
+          <i v-if="showClear"
+            class="cat-input__icon cat-icon-circle-close cat-input__clear"
+            @mousedown.prevent
+            @click="clear"></i>
+          <i v-if="showPwdVisible"
+            class="cat-input__icon cat-icon-view cat-input__clear"
+            @click="handlePasswordVisible"></i>
+        </span>
+      </span>
+      <!-- 后置元素 -->
+      <div class="cat-input-group__append" v-if="$slots.append">
+        <slot name="append"></slot>
+      </div>
     </template>
+    <textarea
+      v-else
+      :tabindex="tabindex"
+      class="cat-textarea__inner"
+      @input="handleInput"
+      ref="textarea"
+      v-bind="$attrs"
+      :disabled="inputDisabled"
+      :readonly="readonly"
+      :style="textareaStyle"
+      @focus="handleFocus"
+      @blur="handleBlur">
+    </textarea>
   </div>
 </template>
 
 <script>
+import Emitter from '../utils/mixins/emitter'
+import calcTextareaHeight from './calcTextareaHeight'
+import merge from '../utils/merge'
+
 export default {
   name: 'CatInput',
 
   componentName: 'CatInput',
+
+  mixins: [Emitter],
 
   inheritAttrs: false,
 
@@ -48,15 +113,6 @@ export default {
       type: String,
       default: 'off'
     },
-    /** @Deprecated in next major version */
-    autoComplete: {
-      type: String,
-      validator (val) {
-        process.env.NODE_ENV !== 'production' &&
-            console.warn('[Cat Warn][Input]\'auto-complete\' property will be deprecated in next major version. please use \'autocomplete\' instead.')
-        return true
-      }
-    },
     validateEvent: {
       type: Boolean,
       default: true
@@ -81,28 +137,108 @@ export default {
 
   data () {
     return {
-      isComposing: false
+      textareaCalcStyle: {},
+      hoving: false,
+      focused: false,
+      isComposing: false,
+      passwordVisible: false
     }
   },
 
   computed: {
+    textareaStyle () {
+      return merge({}, this.textareaCalcStyle, { resize: this.resize })
+    },
+
+    inputDisabled () {
+      return this.disabled || (this.catForm || {}).disabled
+    },
+
     nativeInputValue () {
       return this.value === null || this.value === undefined ? '' : String(this.value)
+    },
+
+    showClear () {
+      return this.clearable &&
+        !this.inputDisabled &&
+        !this.readonly &&
+        this.nativeInputValue &&
+        (this.focused || this.hoving)
+    },
+
+    showPwdVisible () {
+      return this.showPassword &&
+        !this.inputDisabled &&
+        !this.readonly &&
+        (!!this.nativeInputValue || this.focused)
     }
   },
 
   watch: {
+    value (val) {
+      this.$nextTick(this.resizeTextarea)
+      if (this.validateEvent) {
+        this.dispatch('CatFormItem', 'cat.form.change', [val])
+      }
+    },
     nativeInputValue () {
       this.setNativeInputValue()
+    },
+    type () {
+      this.$nextTick(() => {
+        this.setNativeInputValue()
+        this.resizeTextarea()
+      })
     }
   },
 
   methods: {
+    focus () {
+      this.getInput().focus()
+    },
+
+    blur () {
+      this.getInput().blur()
+    },
+
+    handleBlur (event) {
+      this.focused = false
+      this.$emit('blur', event)
+      if (this.validateEvent) {
+        this.dispatch('CatFormItem', 'cat.form.blur', [this.value])
+      }
+    },
+
+    select () {
+      this.getInput().select()
+    },
+
+    resizeTextarea () {
+      if (this.$isServer) return
+      const { autosize, type } = this
+      if (type !== 'textarea') return
+      if (!autosize) {
+        this.textareaCalcStyle = {
+          minHeight: calcTextareaHeight(this.$refs.textarea).minHeight
+        }
+        return
+      }
+      const minRows = autosize.minRows
+      const maxRows = autosize.maxRows
+
+      this.textareaCalcStyle = calcTextareaHeight(this.$refs.textarea, minRows, maxRows)
+    },
+
     setNativeInputValue () {
       const input = this.getInput()
       if (!input) return
       if (input.value === this.nativeInputValue) return
       input.value = this.nativeInputValue
+    },
+
+    handleFocus (event) {
+      this.focused = true
+      this.$emit('focus', event)
     },
 
     handleInput (event) {
@@ -112,13 +248,32 @@ export default {
       this.$nextTick(this.setNativeInputValue)
     },
 
+    clear () {
+      this.$emit('input', '')
+      this.$emit('change', '')
+      this.$emit('clear')
+    },
+
+    handlePasswordVisible () {
+      this.passwordVisible = !this.passwordVisible
+      this.focus()
+    },
+
     getInput () {
       return this.$refs.input || this.$refs.textarea
+    },
+
+    getSuffixVisible () {
+      return this.$slots.suffix ||
+        this.suffixIcon ||
+        this.showClear ||
+        this.showPassword
     }
   },
 
   mounted () {
     this.setNativeInputValue()
+    this.resizeTextarea()
   }
 }
 </script>

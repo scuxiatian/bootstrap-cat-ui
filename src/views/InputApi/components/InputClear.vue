@@ -1,5 +1,5 @@
 <template>
-  <cat-input v-model="input" placeholder="请输入内容"></cat-input>
+  <cat-input placeholder="请输入内容" v-model="input" clearable></cat-input>
 </template>
 
 <script>
