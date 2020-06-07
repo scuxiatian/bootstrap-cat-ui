@@ -4,8 +4,10 @@
     @mouseleave="hoving = false"
     :class="[
       type === 'textarea' ? 'cat-textarea' : 'cat-input',
+      inputSize ? `cat-input--${inputSize}` : '',
       {
         'is-disabled': inputDisabled,
+        'is-exceed': inputExceed,
         'cat-input-group': $slots.prepend || $slots.append,
         'cat-input-group--append': $slots.append,
         'cat-input-group--prepend': $slots.prepend,
@@ -19,14 +21,21 @@
         <slot name="prepend"></slot>
       </div>
       <input
+        :tabindex="tabindex"
         class="cat-input__inner"
         v-bind="$attrs"
         :type="showPassword ? (passwordVisible ? 'text' : 'password') : type"
-        :disabled = inputDisabled
+        :disabled="inputDisabled"
+        :readonly="readonly"
+        :autocomplete="autocomplete"
         ref="input"
+        @compositionstart="handleCompositionStart"
+        @compositionupdate="handleCompositionUpdate"
+        @compositionend="handleCompositionEnd"
         @input="handleInput"
         @focus="handleFocus"
-        @blur="handleBlur">
+        @blur="handleBlur"
+        @change="handleChange">
       <!-- 前置内容 -->
       <span class="cat-input__prefix" v-if="$slots.prefix || prefixIcon">
         <slot name="prefix"></slot>
@@ -59,14 +68,19 @@
       v-else
       :tabindex="tabindex"
       class="cat-textarea__inner"
+      @compositionstart="handleCompositionStart"
+      @compositionupdate="handleCompositionUpdate"
+      @compositionend="handleCompositionEnd"
       @input="handleInput"
       ref="textarea"
       v-bind="$attrs"
       :disabled="inputDisabled"
       :readonly="readonly"
+      :autocomplete="autocomplete"
       :style="textareaStyle"
       @focus="handleFocus"
-      @blur="handleBlur">
+      @blur="handleBlur"
+      @change="handleChange">
     </textarea>
   </div>
 </template>
@@ -146,8 +160,16 @@ export default {
   },
 
   computed: {
+    _catFormItemSize () {
+      return (this.catFormItem || {}).catFormItemSize
+    },
+
     textareaStyle () {
       return merge({}, this.textareaCalcStyle, { resize: this.resize })
+    },
+
+    inputSize () {
+      return this.size || this._catFormItemSize || (this.$CAT || {}).size
     },
 
     inputDisabled () {
