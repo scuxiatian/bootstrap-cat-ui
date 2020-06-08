@@ -46,7 +46,7 @@
         class="cat-input__suffix"
         v-if="getSuffixVisible()">
         <span class="cat-input__suffix-inner">
-          <template v-if="!showClear || !showPwdVisible">
+          <template v-if="!showClear || !showPwdVisible || !isWordLimitVisible">
             <slot name="suffix"></slot>
             <i class="cat-input__icon" v-if="suffixIcon" :class="suffixIcon"></i>
           </template>
@@ -57,7 +57,16 @@
           <i v-if="showPwdVisible"
             class="cat-input__icon cat-icon-view cat-input__clear"
             @click="handlePasswordVisible"></i>
+          <span v-if="isWordLimitVisible" class="cat-input__count">
+            <span class="cat-input__count-inner">
+              {{ textLength }} / {{ upperLimit }}
+            </span>
+          </span>
         </span>
+        <!-- 表单校验图标 -->
+        <i class="cat-input__icon"
+          v-if="validateState"
+          :class="['cat-input__validateIcon', validateIcon]"></i>
       </span>
       <!-- 后置元素 -->
       <div class="cat-input-group__append" v-if="$slots.append">
@@ -82,6 +91,7 @@
       @blur="handleBlur"
       @change="handleChange">
     </textarea>
+    <span v-if="isWordLimitVisible && type === 'textarea'" class="cat-input__count">{{ textLength }}/{{ upperLimit }}</span>
   </div>
 </template>
 
@@ -89,6 +99,7 @@
 import Emitter from '../utils/mixins/emitter'
 import calcTextareaHeight from './calcTextareaHeight'
 import merge from '../utils/merge'
+import { isKorean } from '../utils/shared'
 
 export default {
   name: 'CatInput',
@@ -164,6 +175,22 @@ export default {
       return (this.catFormItem || {}).catFormItemSize
     },
 
+    validateState () {
+      return this.catFormItem ? this.catFormItem.validateState : false
+    },
+
+    needStatusIcon () {
+      return this.catForm ? this.catForm.statusIcon : false
+    },
+
+    validateIcon () {
+      return {
+        validating: 'cat-icon-loading',
+        success: 'cat-icon-circle-check',
+        error: 'cat-icon-circle-close'
+      }[this.validateState]
+    },
+
     textareaStyle () {
       return merge({}, this.textareaCalcStyle, { resize: this.resize })
     },
@@ -193,6 +220,31 @@ export default {
         !this.inputDisabled &&
         !this.readonly &&
         (!!this.nativeInputValue || this.focused)
+    },
+
+    isWordLimitVisible () {
+      return this.showWordLimit &&
+        this.$attrs.maxlength &&
+        (this.type === 'text' || this.type === 'textarea') &&
+        !this.inputDisabled &&
+        !this.readonly &&
+        !this.showPassword
+    },
+
+    upperLimit () {
+      return this.$attrs.maxlength
+    },
+
+    textLength () {
+      if (typeof this.value === 'number') {
+        return String(this.value).length
+      }
+
+      return (this.value || '').length
+    },
+
+    inputExceed () {
+      return this.isWordLimitVisible && (this.textLength > this.upperLimit)
     }
   },
 
@@ -210,6 +262,7 @@ export default {
       this.$nextTick(() => {
         this.setNativeInputValue()
         this.resizeTextarea()
+        this.updateIconOffset()
       })
     }
   },
@@ -263,11 +316,61 @@ export default {
       this.$emit('focus', event)
     },
 
+    handleCompositionStart () {
+      this.isComposing = true
+    },
+
+    handleCompositionUpdate (event) {
+      const text = event.target.value
+      const lastCharacter = text[text.length - 1] || ''
+      this.isComposing = !isKorean(lastCharacter)
+    },
+
+    handleCompositionEnd (event) {
+      if (this.isComposing) {
+        this.isComposing = false
+        this.handleInput(event)
+      }
+    },
+
     handleInput (event) {
       if (this.isComposing) return
       if (event.target.value === this.nativeInputValue) return
       this.$emit('input', event.target.value)
       this.$nextTick(this.setNativeInputValue)
+    },
+
+    handleChange (event) {
+      this.$emit('change', event.target.value)
+    },
+
+    calcIconOffset (place) {
+      const elList = [].slice.call(this.$el.querySelectorAll(`.cat-input__${place}`) || [])
+      if (!elList.length) return
+      let el = null
+      for (let i = 0; i < elList.length; i++) {
+        if (elList[i].parentNode === this.$el) {
+          el = elList[i]
+          break
+        }
+      }
+      if (!el) return
+      const pendantMap = {
+        suffix: 'append',
+        prefix: 'prepend'
+      }
+
+      const pendant = pendantMap[place]
+      if (this.$slots[pendant]) {
+        el.style.transform = `translateX(${place === 'suffix' ? '-' : ''}${this.$el.querySelector(`.cat-input-group__${pendant}`).offsetWidth}px)`
+      } else {
+        el.removeAttribute('style')
+      }
+    },
+
+    updateIconOffset () {
+      this.calcIconOffset('prefix')
+      this.calcIconOffset('suffix')
     },
 
     clear () {
@@ -289,13 +392,24 @@ export default {
       return this.$slots.suffix ||
         this.suffixIcon ||
         this.showClear ||
-        this.showPassword
+        this.showPassword ||
+        this.isWordLimitVisible ||
+        (this.validateState && this.needStatusIcon)
     }
+  },
+
+  created () {
+    this.$on('inputSelect', this.select)
   },
 
   mounted () {
     this.setNativeInputValue()
     this.resizeTextarea()
+    this.updateIconOffset()
+  },
+
+  updated () {
+    this.$nextTick(this.updateIconOffset)
   }
 }
 </script>

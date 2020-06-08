@@ -6,6 +6,7 @@
 
 <script>
 export default {
-  name: 'CatButtonGroup'
+  name: 'CatButtonGroup',
+  componentName: 'CatButtonGroup'
 }
 </script>

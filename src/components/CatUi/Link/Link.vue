@@ -13,6 +13,7 @@
 <script>
 export default {
   name: 'CatLink',
+  componentName: 'CatLink',
   props: {
     type: {
       type: String,

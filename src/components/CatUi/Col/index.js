@@ -1,5 +1,6 @@
 export default {
   name: 'CatCol',
+  componentName: 'CatCol',
   props: {
     tag: {
       type: String,

@@ -1,9 +1,8 @@
-import Vue from 'vue'
 import Row from './Row'
 import Col from './Col'
-import Button from './Button'
+import Button from './Button/Button.vue'
 import ButtonGroup from './Button/ButtonGroup.vue'
-import Link from './Link'
+import Link from './Link/Link.vue'
 
 import Radio from './Radio/Radio.vue'
 import RadioButton from './Radio/RadioButton.vue'
@@ -13,38 +12,45 @@ import CheckboxGroup from './Checkbox/CheckboxGroup.vue'
 import CheckBoxButton from './Checkbox/CheckboxButton.vue'
 import Input from './Input/Input.vue'
 
-import Menu from './Menu'
+import Menu from './Menu/Menu.vue'
 import MenuItem from './Menu/MenuItem.vue'
 import Submenu from './Menu/Submenu.vue'
 import MenuItemGroup from './Menu/MenuItemGroup'
 import Table from './Table/Table.vue'
 import TableColumn from './Table/TableColumn.vue'
 
-Vue.component('cat-row', Row)
-Vue.component('cat-col', Col)
-Vue.component('cat-button', Button)
-Vue.component('cat-button-group', ButtonGroup)
-Vue.component('cat-link', Link)
-
-Vue.component('cat-radio', Radio)
-Vue.component('cat-radio-button', RadioButton)
-Vue.component('cat-radio-group', RadioGroup)
-Vue.component('cat-checkbox', Checkbox)
-Vue.component('cat-checkbox-group', CheckboxGroup)
-
-Vue.component('cat-table', Table)
-Vue.component('cat-table-column', TableColumn)
-
-Vue.component('cat-menu', Menu)
-Vue.component('cat-menu-item', MenuItem)
-Vue.component('cat-submenu', Submenu)
-Vue.component('cat-menu-item-group', MenuItemGroup)
-
 const components = [
+  Row,
+  Col,
+  Button,
+  ButtonGroup,
+  Link,
+  Radio,
+  RadioButton,
+  RadioGroup,
+  Checkbox,
+  CheckboxGroup,
   CheckBoxButton,
-  Input
+  Input,
+  Table,
+  TableColumn,
+  Menu,
+  MenuItem,
+  Submenu,
+  MenuItemGroup
 ]
 
-components.forEach(component => {
-  Vue.component(component.componentName, component)
-})
+const install = (Vue, opts = {}) => {
+  components.forEach(component => {
+    Vue.component(component.componentName, component)
+  })
+
+  Vue.prototype.$Cat = {
+    size: opts.size || '',
+    zIndex: opts.zIndex || 2000
+  }
+}
+
+export default {
+  install
+}

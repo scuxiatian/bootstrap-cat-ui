@@ -27,6 +27,9 @@
     <show-box :config="inputSizeConfig">
       <input-size></input-size>
     </show-box>
+    <show-box :config="inputLimitConfig">
+      <input-limit></input-limit>
+    </show-box>
   </view-page>
 </template>
 
@@ -40,6 +43,7 @@ import InputTextarea from './components/InputTextarea'
 import InputAutosize from './components/InputAutosize'
 import InputComplex from './components/InputComplex'
 import InputSize from './components/InputSize'
+import InputLimit from './components/InputLimit'
 import code from './code'
 
 export default {
@@ -53,7 +57,8 @@ export default {
     InputTextarea,
     InputAutosize,
     InputComplex,
-    InputSize
+    InputSize,
+    InputLimit
   },
   data () {
     return {
@@ -103,6 +108,11 @@ export default {
         title: '尺寸',
         code: code.sizeCode,
         codeDesc: '可通过 size 属性指定输入框的尺寸，除了默认的大小外，还提供了 large、small 和 mini 三种尺寸。'
+      },
+      inputLimitConfig: {
+        title: '输入长度限制',
+        code: code.limitCode,
+        codeDesc: 'maxlength 和 minlength 是原生属性，用来限制输入框的字符长度，其中字符长度是用 Javascript 的字符串长度统计的。对于类型为 text 或 textarea 的输入框，在使用 maxlength 属性限制最大输入长度的同时，可通过设置 show-word-limit 属性来展示字数统计。'
       }
     }
   }
