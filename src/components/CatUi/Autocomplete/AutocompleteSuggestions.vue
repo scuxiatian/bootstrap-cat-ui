@@ -6,8 +6,13 @@
       :class="{ 'is-loading': !parent.hideLoading && parent.loading }"
       :style="{ width: dropdownWidth }"
       role="region">
-      <li v-if="!parent.hideLoading && parent.loading"><i class="el-icon-loading"></i></li>
-      <slot v-else></slot>
+      <cat-scrollbar
+        tag="ul"
+        wrap-class="cat-autocomplete-suggestion__wrap"
+        view-class="cat-autocomplete-suggestion__list">
+        <li v-if="!parent.hideLoading && parent.loading"><i class="cat-icon-loading"></i></li>
+        <slot v-else></slot>
+      </cat-scrollbar>
     </div>
   </transition>
 </template>
@@ -15,11 +20,16 @@
 <script>
 import Popper from '../utils/vue-popper'
 import Emitter from '../utils/mixins/emitter'
+import CatScrollbar from '../Scrollbar/main'
 
 export default {
   name: 'CatAutocompleteSuggestions',
 
   componentName: 'CatAutocompleteSuggestions',
+
+  components: {
+    CatScrollbar
+  },
 
   mixins: [Popper, Emitter],
 

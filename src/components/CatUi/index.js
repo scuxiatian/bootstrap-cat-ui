@@ -11,6 +11,7 @@ import Checkbox from './Checkbox/Checkbox.vue'
 import CheckboxGroup from './Checkbox/CheckboxGroup.vue'
 import CheckBoxButton from './Checkbox/CheckboxButton.vue'
 import Input from './Input/Input.vue'
+import Autocomplete from './Autocomplete/Autocomplete.vue'
 
 import Menu from './Menu/Menu.vue'
 import MenuItem from './Menu/MenuItem.vue'
@@ -32,6 +33,7 @@ const components = [
   CheckboxGroup,
   CheckBoxButton,
   Input,
+  Autocomplete,
   Table,
   TableColumn,
   Menu,

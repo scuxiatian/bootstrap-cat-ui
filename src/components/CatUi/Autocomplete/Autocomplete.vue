@@ -1,11 +1,19 @@
 <template>
   <div
     class="cat-autocomplete"
+    v-clickoutside="close"
     role="combobox">
     <cat-input
       ref="input"
       v-bind="[$props, $attrs]"
-      role="combobox">
+      @input="handleChange"
+      @focus="handleFocus"
+      @blur="handleBlur"
+      @clear="handleClear"
+      @keydown.up.native.prevent="highlight(highlightedIndex - 1)"
+      @keydown.down.native.prevent="highlight(highlightedIndex + 1)"
+      @keydown.enter.native="handleKeyEnter"
+      @keydown.native.tab="close">
       <template slot="prepend" v-if="$slots.prepend">
         <slot name="prepend"></slot>
       </template>
@@ -18,27 +26,34 @@
       <template slot="suffix" v-if="$slots.suffix">
         <slot name="suffix"></slot>
       </template>
-      <cat-autocomplete-suggestions
-        visible-arrow
-        :class="[popperClass ? popperClass : '']"
-        ref="suggestions"
-        :id="id">
-        <li v-for="(item, index) in suggestions"
-          :key="index"
-          @click="select(item)"
-          :id="`${id}-item-${index}`"
-          role="option">
-            <slot :item="item">{{ item[valueKey] }}</slot>
-        </li>
-      </cat-autocomplete-suggestions>
     </cat-input>
+    <cat-autocomplete-suggestions
+      visible-arrow
+      :class="[popperClass ? popperClass : '']"
+      :popper-options="popperOptions"
+      :append-to-body="popperAppendToBody"
+      ref="suggestions"
+      :placement="placement"
+      :id="id">
+      <li v-for="(item, index) in suggestions"
+        :key="index"
+        :class="{'highlighted': highlightedIndex === index}"
+        @click="select(item)"
+        :id="`${id}-item-${index}`"
+        role="option">
+          <slot :item="item">{{ item[valueKey] }}</slot>
+      </li>
+    </cat-autocomplete-suggestions>
   </div>
 </template>
 
 <script>
 import { debounce } from 'throttle-debounce'
 import CatInput from '../Input/Input'
+import Clickoutside from '../utils/clickoutside'
 import CatAutocompleteSuggestions from './AutocompleteSuggestions'
+import Emitter from '../utils/mixins/emitter'
+import Focus from '../utils/mixins/focus'
 import { generateId } from 'element-ui/src/utils/util'
 
 export default {
@@ -46,9 +61,17 @@ export default {
 
   componentName: 'CatAutocomplete',
 
+  mixins: [Emitter, Focus('input')],
+
+  inheritAttrs: false,
+
   components: {
     CatInput,
     CatAutocompleteSuggestions
+  },
+
+  directives: {
+    Clickoutside
   },
 
   props: {
@@ -163,6 +186,40 @@ export default {
       this.debouncedGetData(value)
     },
 
+    handleFocus (event) {
+      this.activated = true
+      this.$emit('focus', event)
+      if (this.triggerOnFocus) {
+        this.debouncedGetData(this.value)
+      }
+    },
+
+    handleBlur (event) {
+      this.$emit('blur', event)
+    },
+
+    handleClear () {
+      this.activated = false
+      this.$emit('clear')
+    },
+
+    close (e) {
+      this.activated = false
+    },
+
+    handleKeyEnter (e) {
+      if (this.suggestionVisible && this.highlightedIndex >= 0 && this.highlightedIndex < this.suggestions.length) {
+        e.preventDefault()
+        this.select(this.suggestions[this.highlightedIndex])
+      } else if (this.selectWhenUnmatched) {
+        this.$emit('select', { value: this.value })
+        this.$nextTick(_ => {
+          this.suggestions = []
+          this.highlightedIndex = -1
+        })
+      }
+    },
+
     select (item) {
       this.$emit('input', item[this.valueKey])
       this.$emit('select', item)
@@ -195,6 +252,10 @@ export default {
         suggestion.scrollTop -= highlightItem.scrollHeight
       }
       this.highlightedIndex = index
+    },
+
+    getInput () {
+      return this.$refs.input.getInput()
     }
   },
 

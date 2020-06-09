@@ -40,6 +40,14 @@ export default {
         events: {
           title: 'Events',
           heads: ['事件名称', '说明', '回调参数']
+        },
+        slots: {
+          title: 'Slots',
+          heads: ['name', '说明']
+        },
+        scopedSlot: {
+          title: 'Scoped Slot',
+          heads: ['name', '说明']
         }
       }
     }
