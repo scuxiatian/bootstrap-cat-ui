@@ -8,19 +8,34 @@
     @focus="onMouseEnter"
     @blur="onMouseLeave"
     @mouseleave="onMouseLeave">
-    <slot></slot>
-    <slot name="title"></slot>
+    <cat-tooltip
+      v-if="parentMenu.$options.componentName === 'CatMenu'  && rootMenu.collapse && $slots.title"
+      effect="dark"
+      placement="right">
+      <div slot="content">
+        <slot name="title"></slot>
+      </div>
+      <div style="position: absolute;left: 0;top: 0;height: 100%;width: 100%;display: inline-block;box-sizing: border-box;padding: 0 20px;">
+        <slot></slot>
+      </div>
+    </cat-tooltip>
+    <template v-else>
+      <slot></slot>
+      <slot name="title"></slot>
+    </template>
   </li>
 </template>
 
 <script>
 import Menu from './menu-mixin'
+import CatTooltip from '../Tooltip/Tooltip'
 import Emitter from '../utils/mixins/emitter'
 
 export default {
   name: 'CatMenuItem',
   componentName: 'CatMenuItem',
   mixins: [Menu, Emitter],
+  components: { CatTooltip },
   props: {
     disabled: {
       type: Boolean,

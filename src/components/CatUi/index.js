@@ -21,6 +21,8 @@ import MenuItemGroup from './Menu/MenuItemGroup'
 import Table from './Table/Table.vue'
 import TableColumn from './Table/TableColumn.vue'
 
+import Tooltip from './Tooltip/Tooltip'
+
 const components = [
   Row,
   Col,
@@ -41,15 +43,16 @@ const components = [
   Menu,
   MenuItem,
   Submenu,
-  MenuItemGroup
+  MenuItemGroup,
+  Tooltip
 ]
 
 const install = (Vue, opts = {}) => {
   components.forEach(component => {
-    Vue.component(component.componentName, component)
+    Vue.component(component.name, component)
   })
 
-  Vue.prototype.$Cat = {
+  Vue.prototype.$CAT = {
     size: opts.size || '',
     zIndex: opts.zIndex || 2000
   }

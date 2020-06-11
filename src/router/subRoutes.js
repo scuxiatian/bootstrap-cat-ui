@@ -88,6 +88,15 @@ const subRoutes = [
       title: '导航菜单',
       group: 4
     }
+  },
+  {
+    path: 'tooltip',
+    name: 'TooltipApi',
+    component: () => import('@/views/TooltipApi'),
+    meta: {
+      title: '文字提示',
+      group: 5
+    }
   }
 ]
 

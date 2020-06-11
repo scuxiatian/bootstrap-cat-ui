@@ -25,7 +25,7 @@ export default {
   data () {
     return {
       routes: this.groupRoutes(routes),
-      groups: ['Basic', 'Form', 'Data', 'Notice', 'Navigation']
+      groups: ['Basic', 'Form', 'Data', 'Notice', 'Navigation', 'Others']
     }
   },
   methods: {
