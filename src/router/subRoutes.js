@@ -97,6 +97,15 @@ const subRoutes = [
       title: '文字提示',
       group: 5
     }
+  },
+  {
+    path: 'popover',
+    name: 'PopoverApi',
+    component: () => import('@/views/PopoverApi'),
+    meta: {
+      title: '弹出框',
+      group: 5
+    }
   }
 ]
 

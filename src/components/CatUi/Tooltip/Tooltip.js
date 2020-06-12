@@ -189,7 +189,7 @@ export default {
       })
     }
     if (this.value && this.popperVM) {
-      this.popperVM.nextTick(() => {
+      this.popperVM.$nextTick(() => {
         if (this.value) {
           this.updatePopper()
         }

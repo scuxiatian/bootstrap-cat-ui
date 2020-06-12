@@ -22,6 +22,7 @@ import Table from './Table/Table.vue'
 import TableColumn from './Table/TableColumn.vue'
 
 import Tooltip from './Tooltip/Tooltip'
+import Popover from './Popover'
 
 const components = [
   Row,
@@ -44,7 +45,8 @@ const components = [
   MenuItem,
   Submenu,
   MenuItemGroup,
-  Tooltip
+  Tooltip,
+  Popover
 ]
 
 const install = (Vue, opts = {}) => {
