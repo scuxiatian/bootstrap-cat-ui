@@ -72,6 +72,15 @@ const subRoutes = [
     }
   },
   {
+    path: 'select',
+    name: 'SelectApi',
+    component: () => import('@/views/SelectApi'),
+    meta: {
+      title: 'Select 选择器',
+      group: 1
+    }
+  },
+  {
     path: 'table',
     name: 'TableApi',
     component: () => import('@/views/TableApi'),
