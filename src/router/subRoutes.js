@@ -90,6 +90,15 @@ const subRoutes = [
     }
   },
   {
+    path: 'tag',
+    name: 'TagApi',
+    component: () => import('@/views/TagApi'),
+    meta: {
+      title: 'Tag 标签',
+      group: 2
+    }
+  },
+  {
     path: 'menu',
     name: 'MenuApi',
     component: () => import('@/views/MenuApi'),

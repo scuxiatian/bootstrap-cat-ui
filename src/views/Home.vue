@@ -49,7 +49,8 @@ export default {
   width: 100%;
   margin: 0;
 }
-.content {
+.cat-col {
+  height: 100vh;
   overflow: auto;
 }
 </style>

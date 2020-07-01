@@ -5,7 +5,8 @@
     class="cat-select-dropdown__item"
     v-show="visible"
     :class="{
-      'selected': itemSelected
+      'selected': itemSelected,
+      'is-disabled': disabled || groupDisabled || limitReached
     }">
     <slot>
       <span>{{ currentLabel }}</span>
@@ -66,6 +67,10 @@ export default {
       } else {
         return this.contains(this.select.value, this.value)
       }
+    },
+
+    limitReached () {
+      return false
     }
   },
 
