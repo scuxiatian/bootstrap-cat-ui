@@ -1,6 +1,7 @@
 <template>
   <div
     class="cat-select"
+    :class="[selectSize ? 'cat-select--' + selectSize : '']"
     @click.stop="toggleMenu"
     v-clickoutside="handleClose">
     <div
@@ -40,6 +41,31 @@
           <span class="cat-select__tags-text">{{ item.currentLabel }}</span>
         </cat-tag>
       </transition-group>
+
+      <input
+        type="text"
+        class="cat-select__input"
+        :class="[selectSize ? `is-${ selectSize }` : '']"
+        :disabled="selectDisabled"
+        :autocomplete="autocomplete"
+        @focus="handleFocus"
+        @blur="softFocus = false"
+        @keyup="managePlaceholder"
+        @keydown="resetInputState"
+        @keydown.down.prevent="navigateOptions('next')"
+        @keydown.up.prevent="navigateOptions('prev')"
+        @keydown.enter.prevent="selectOption"
+        @keydown.esc.stop.prevent="visible = false"
+        @keydown.delete="deletePrevTag"
+        @keydown.tab="visible = false"
+        @compositionstart="handleComposition"
+        @compositionupdate="handleComposition"
+        @compositionend="handleComposition"
+        v-model="query"
+        @input="debouncedQueryChange"
+        v-if="filterable"
+        :style="{ 'flex-grow': '1', width: inputLength / (inputWidth - 32) + '%', 'max-width': inputWidth - 42 + 'px' }"
+        ref="input">
     </div>
     <cat-input
       ref="reference"
@@ -49,9 +75,23 @@
       :name="name"
       :id="id"
       :autocomplete="autocomplete"
+      :size="selectSize"
       :disabled="selectDisabled"
       :readonly="readonly"
-      :class="{ 'is-focus': visible }">
+      :validate-event="false"
+      :class="{ 'is-focus': visible }"
+      :tabindex="(multiple && filterable) ? '-1' : null"
+      @focus="handleFocus"
+      @blur="handleBlur"
+      @keyup.native="debouncedOnInputChange"
+      @keydown.native.down.stop.prevent="navigateOptions('next')"
+      @keydown.native.up.stop.prevent="navigateOptions('prev')"
+      @keydown.native.enter.prevent="selectOption"
+      @keydown.native.esc.stop.prevent="visible = false"
+      @keydown.native.tab="visible = false"
+      @paste.native="debouncedOnInputChange"
+      @mouseenter.native="inputHovering = true"
+      @mouseleave.native="inputHovering = false">
       <template slot="prefix" v-if="$slots.prefix">
         <slot name="prefix"></slot>
       </template>
@@ -61,7 +101,9 @@
       </template>
     </cat-input>
     <transition
-      name="cat-zoom-in-top">
+      name="cat-zoom-in-top"
+      @before-enter="handleMenuEnter"
+      @after-leave="doDestroy">
       <cat-select-menu
         ref="popper"
         :append-to-body="popperAppendToBody"
@@ -71,9 +113,21 @@
           wrap-class="cat-select-dropdown__wrap"
           view-class="cat-select-dropdown__list"
           ref="scrollbar"
+          :class="{ 'is-empty': !allowCreate && query && filteredOptionsCount === 0 }"
           v-show="options.length > 0 && !loading">
+          <cat-option
+            :value="query"
+            created
+            v-if="showNewOption">
+          </cat-option>
           <slot></slot>
         </cat-scrollbar>
+        <template v-if="emptyText && (!allowCreate || loading || (allowCreate && options.length === 0 ))">
+          <slot name="empty" v-if="$slots.empty"></slot>
+          <p class="cat-select-dropdown__empty" v-else>
+            {{ emptyText }}
+          </p>
+        </template>
       </cat-select-menu>
     </transition>
   </div>
@@ -85,16 +139,21 @@ import Focus from '../utils/mixins/focus'
 import CatInput from '../Input/Input.vue'
 import CatSelectMenu from './SelectDropdown'
 import CatOption from './Option.vue'
+import CatTag from '../Tag/Tag.vue'
 import CatScrollbar from '../Scrollbar/main.js'
+import { debounce } from 'throttle-debounce'
 import Clickoutside from '../utils/clickoutside'
+import scrollIntoView from '../utils/scroll-into-view'
+import { addResizeListener, removeResizeListener } from '../utils/resize-event'
 import { valueEquals, getValueByPath } from '../utils/util'
+import NavigationMixin from './navigation-mixin'
 
 export default {
   name: 'CatSelect',
 
   componentName: 'CatSelect',
 
-  mixins: [Emitter, Focus('reference')],
+  mixins: [Emitter, Focus('reference'), NavigationMixin],
 
   inject: {
     CatForm: {
@@ -113,10 +172,10 @@ export default {
   },
 
   components: {
-    // eslint-disable-next-line vue/no-unused-components
     CatOption,
     CatInput,
     CatSelectMenu,
+    CatTag,
     CatScrollbar
   },
 
@@ -132,15 +191,20 @@ export default {
       type: String,
       default: 'off'
     },
+    automaticDropdown: Boolean,
     size: String,
     disabled: Boolean,
     clearable: Boolean,
     filterable: Boolean,
+    allowCreate: Boolean,
     loading: Boolean,
     popperClass: String,
+    remote: Boolean,
     loadingText: String,
     noMatchText: String,
     noDataText: String,
+    remoteMethod: Function,
+    filterMethod: Function,
     multiple: Boolean,
     multipleLimit: {
       type: Number,
@@ -149,9 +213,11 @@ export default {
     placeholder: {
       type: String,
       default () {
-        return ''
+        return '请选择'
       }
     },
+    defaultFirstOption: Boolean,
+    reserveKeyword: Boolean,
     valueKey: {
       type: String,
       default: 'value'
@@ -170,18 +236,33 @@ export default {
       createdLabel: null,
       createdSelected: false,
       selected: this.multiple ? [] : {},
+      inputLength: 20,
+      inputWidth: 0,
+      initialInputHeight: 0,
       cachedPlaceHolder: '',
       optionsCount: 0,
       filteredOptionsCount: 0,
       visible: false,
+      softFocus: false,
       selectedLabel: '',
-      currentPlaceholder: ''
+      hoverIndex: -1,
+      query: '',
+      previousQuery: null,
+      inputHovering: false,
+      currentPlaceholder: '',
+      menuVisibleOnFocus: false,
+      isOnComposition: false,
+      isSilentBlur: false
     }
   },
 
   computed: {
+    _catFormItemSize () {
+      return (this.catFormItem || {}).catFormItemSize
+    },
+
     readonly () {
-      return true
+      return !this.filterable || this.multiple || !this.visible
     },
 
     showClose () {
@@ -190,16 +271,42 @@ export default {
         : this.value !== undefined && this.value !== null && this.value !== ''
       const criteria = this.clearable &&
         !this.selectDisabled &&
+        this.inputHovering &&
         hasValue
       return criteria
     },
 
     iconClass () {
-      return this.visible ? 'arrow-up is-reverse' : 'arrow-up'
+      return this.remote && this.filterable ? '' : (this.visible ? 'arrow-up is-reverse' : 'arrow-up')
+    },
+
+    debounce () {
+      return this.remote ? 300 : 0
     },
 
     emptyText () {
+      if (this.loading) {
+        return this.loadingText || '加载中'
+      } else {
+        if (this.remote && this.query === '' && this.options.length === 0) return false
+        if (this.filterable && this.query && this.options.length > 0 && this.filteredOptionsCount === 0) {
+          return this.noMatchText || '没有匹配选项'
+        }
+        if (this.options.length === 0) {
+          return this.noDataText || '没有可用选项'
+        }
+      }
       return null
+    },
+
+    showNewOption () {
+      const hasExistingOption = this.options.filter(option => !option.created)
+        .some(option => option.currentLabel === this.query)
+      return this.filterable && this.allowCreate && this.query !== '' && !hasExistingOption
+    },
+
+    selectSize () {
+      return this.size || this._catFormItemSize || (this.$CAT || {}).size
     },
 
     selectDisabled () {
@@ -220,6 +327,10 @@ export default {
       })
     },
 
+    placeholder (val) {
+      this.cachedPlaceHolder = this.currentPlaceholder = val
+    },
+
     value (val, oldVal) {
       if (this.multiple) {
         this.resetInputHeight()
@@ -228,15 +339,158 @@ export default {
         } else {
           this.currentPlaceholder = this.cachedPlaceHolder
         }
+        if (this.filterable && !this.reserveKeyword) {
+          this.query = ''
+          this.handleQueryChange(this.query)
+        }
       }
       this.setSelected()
+      if (this.filterable && !this.multiple) {
+        this.inputLength = 20
+      }
       if (!valueEquals(val, oldVal)) {
         this.dispatch('CatFormItem', 'cat.form.change', val)
+      }
+    },
+
+    visible (val) {
+      if (!val) {
+        this.broadcast('CatSelectDropdown', 'destroyPopper')
+        if (this.$refs.input) {
+          this.$refs.input.blur()
+        }
+        this.query = ''
+        this.previousQuery = null
+        this.selectedLabel = ''
+        this.inputLength = 20
+        this.menuVisibleOnFocus = false
+        this.resetHoverIndex()
+        this.$nextTick(() => {
+          if (this.$refs.input &&
+              this.$refs.input.value === '' &&
+              this.selected.length === 0) {
+            this.currentPlaceholder = this.cachedPlaceHolder
+          }
+        })
+        if (!this.multiple) {
+          if (this.selected) {
+            if (this.filterable && this.allowCreate &&
+                this.createdSelected && this.createdLabel) {
+              this.selectedLabel = this.createdLabel
+            } else {
+              this.selectedLabel = this.selected.currentLabel
+            }
+            if (this.filterable) this.query = this.selectedLabel
+          }
+
+          if (this.filterable) {
+            this.currentPlaceholder = this.cachedPlaceHolder
+          }
+        }
+      } else {
+        this.broadcast('CatSelectDropdown', 'updatePopper')
+        if (this.filterable) {
+          this.query = this.remote ? '' : this.selectedLabel
+          this.handleQueryChange(this.query)
+          if (this.multiple) {
+            this.$refs.input.focus()
+          } else {
+            if (!this.remote) {
+              this.broadcast('CatOption', 'queryChange', '')
+              this.broadcast('CatOptionGroup', 'queryChange')
+            }
+
+            if (this.selectedLabel) {
+              this.currentPlaceholder = this.selectedLabel
+              this.selectedLabel = ''
+            }
+          }
+        }
+      }
+      this.$emit('visible-change', val)
+    },
+
+    options () {
+      if (this.$isServer) return
+      this.$nextTick(() => {
+        this.broadcast('CatSelectDropdown', 'updatePopper')
+      })
+      if (this.multiple) {
+        this.resetInputHeight()
+      }
+      const inputs = this.$el.querySelectorAll('input')
+      if ([].indexOf.call(inputs, document.activeElement) === -1) {
+        this.setSelected()
+      }
+      if (this.defaultFirstOption && (this.filterable || this.remote) && this.filteredOptionsCount) {
+        this.checkDefaultFirstOption()
       }
     }
   },
 
   methods: {
+    handleComposition (val) {
+      const text = event.target.value
+      if (event.type === 'compositionend') {
+        this.isOnComposition = false
+        this.$nextTick(_ => this.handleQueryChange(text))
+      } else {
+        const lastCharacter = text[text.length - 1] || ''
+        this.isOnComposition = !(lastCharacter)
+      }
+    },
+
+    handleQueryChange (val) {
+      if (this.previousQuery === val) return
+      if (
+        this.previousQuery === null &&
+        (typeof this.filterMethod === 'function' || typeof this.remoteMethod === 'function')
+      ) {
+        this.previousQuery = val
+        return
+      }
+      this.previousQuery = val
+      this.$nextTick(() => {
+        if (this.visible) this.broadcast('CatSelectDropdown', 'updatePopper')
+      })
+      this.hoverIndex = -1
+      if (this.multiple && this.filterable) {
+        this.$nextTick(() => {
+          const length = this.$refs.input.value.length * 15 + 20
+          this.inputLength = this.collapseTags ? Math.min(50, length) : length
+          this.managePlaceholder()
+          this.resetInputHeight()
+        })
+      }
+      if (this.remote && typeof this.remoteMethod === 'function') {
+        this.hoverIndex = -1
+        this.remoteMethod(val)
+      } else if (typeof this.filterMethod === 'function') {
+        this.filterMethod(val)
+        this.broadcast('CatOptionGroup', 'queryChange')
+      } else {
+        this.filteredOptionsCount = this.optionsCount
+        this.broadcast('CatOption', 'queryChange', val)
+        this.broadcast('CatOptionGroup', 'queryChange')
+      }
+      if (this.defaultFirstOption && (this.filterable || this.remote) && this.filteredOptionsCount) {
+        this.checkDefaultFirstOption()
+      }
+    },
+
+    scrollToOption (option) {
+      const target = Array.isArray(option) && option[0] ? option[0].$el : option.$el
+      if (this.$refs.popper && target) {
+        const menu = this.$refs.popper.$el.querySelector('.cat-select-dropdown__wrap')
+        scrollIntoView(menu, target)
+      }
+      this.$refs.scrollbar && this.$refs.scrollbar.handleScroll()
+    },
+
+    handleMenuEnter () {
+      this.$nextTick(() => this.scrollToOption(this.selected))
+    },
+
     emitChange (val) {
       if (!valueEquals(this.value, val)) {
         this.$emit('change', val)
@@ -283,6 +537,7 @@ export default {
         }
         this.selectedLabel = option.currentLabel
         this.selected = option
+        if (this.filterable) this.query = this.selectedLabel
         return
       }
       const result = []
@@ -297,12 +552,81 @@ export default {
       })
     },
 
+    handleFocus (event) {
+      if (!this.softFocus) {
+        if (this.automaticDropdown || this.filterable) {
+          this.visible = true
+          if (this.filterable) {
+            this.menuVisibleOnFocus = true
+          }
+        }
+        this.$emit('focus', event)
+      } else {
+        this.softFocus = false
+      }
+    },
+
+    blur () {
+      this.visible = false
+      this.$refs.reference.blur()
+    },
+
+    handleBlur (event) {
+      setTimeout(() => {
+        if (this.isSilentBlur) {
+          this.isSilentBlur = false
+        } else {
+          this.$emit('blur', event)
+        }
+      }, 50)
+      this.softFocus = false
+    },
+
     handleClearClick (event) {
       this.deleteSelected(event)
     },
 
+    doDestroy () {
+      this.$refs.popper && this.$refs.popper.doDestroy()
+    },
+
     handleClose () {
       this.visible = false
+    },
+
+    toggleLastOptionHitState (hit) {
+      if (!Array.isArray(this.selected)) return
+      const option = this.selected[this.selected.length - 1]
+      if (!option) return
+
+      if (hit === true || hit === false) {
+        option.hitState = hit
+        return hit
+      }
+
+      option.hitState = !option.hitState
+      return option.hitState
+    },
+
+    deletePrevTag (e) {
+      if (e.target.value.length <= 0 && !this.toggleLastOptionHitState()) {
+        const value = this.value.slice()
+        value.pop()
+        this.$emit('input', value)
+        this.emitChange(value)
+      }
+    },
+
+    managePlaceholder () {
+      if (this.currentPlaceholder !== '') {
+        this.currentPlaceholder = this.$refs.input.value ? '' : this.cachedPlaceHolder
+      }
+    },
+
+    resetInputState (e) {
+      if (e.keyCode !== 8) this.toggleLastOptionHitState(false)
+      this.inputLength = this.$refs.input.value.length * 15 + 20
+      this.resetInputHeight()
     },
 
     resetInputHeight () {
@@ -325,6 +649,20 @@ export default {
       })
     },
 
+    resetHoverIndex () {
+      setTimeout(() => {
+        if (!this.multiple) {
+          this.hoverIndex = this.options.indexOf(this.selected)
+        } else {
+          if (this.selected.length > 0) {
+            this.hoverIndex = Math.min.apply(null, this.selected.map(item => this.options.indexOf(item)))
+          } else {
+            this.hoverIndex = -1
+          }
+        }
+      }, 300)
+    },
+
     handleOptionSelect (option, byClick) {
       if (this.multiple) {
         const value = (this.value || []).slice()
@@ -340,6 +678,20 @@ export default {
         this.$emit('input', option.value)
         this.emitChange(option.value)
         this.visible = false
+      }
+      this.isSilentBlur = byClick
+      this.setSoftFocus()
+      if (this.visible) return
+      this.$nextTick(() => {
+        this.scrollToOption(option)
+      })
+    },
+
+    setSoftFocus () {
+      this.softFocus = true
+      const input = this.$refs.input || this.$refs.reference
+      if (input) {
+        input.focus()
       }
     },
 
@@ -363,9 +715,23 @@ export default {
 
     toggleMenu () {
       if (!this.selectDisabled) {
-        this.visible = !this.visible
+        if (this.menuVisibleOnFocus) {
+          this.menuVisibleOnFocus = false
+        } else {
+          this.visible = !this.visible
+        }
         if (this.visible) {
           (this.$refs.input || this.$refs.reference).focus()
+        }
+      }
+    },
+
+    selectOption () {
+      if (!this.visible) {
+        this.toggleMenu()
+      } else {
+        if (this.options[this.hoverIndex]) {
+          this.handleOptionSelect(this.options[this.hoverIndex])
         }
       }
     },
@@ -391,11 +757,57 @@ export default {
       event.stopPropagation()
     },
 
+    onInputChange () {
+      if (this.filterable && this.query !== this.selectedLabel) {
+        this.query = this.selectedLabel
+        this.handleQueryChange(this.query)
+      }
+    },
+
     onOptionDestroy (index) {
       if (index > -1) {
         this.optionsCount--
         this.filteredOptionsCount--
         this.options.splice(index, 1)
+      }
+    },
+
+    resetInputWidth () {
+      this.inputWidth = this.$refs.reference.$el.getBoundingClientRect().width
+    },
+
+    handleResize () {
+      this.resetInputWidth()
+      if (this.multiple) this.resetInputHeight()
+    },
+
+    checkDefaultFirstOption () {
+      this.hoverIndex = -1
+      // highlight the created option
+      let hasCreated = false
+      for (let i = this.options.length - 1; i >= 0; i--) {
+        if (this.options[i].created) {
+          hasCreated = true
+          this.hoverIndex = i
+          break
+        }
+      }
+      if (hasCreated) return
+      for (let i = 0; i !== this.options.length; ++i) {
+        const option = this.options[i]
+        if (this.query) {
+          // highlight first options that passes the filter
+          if (!option.disabled && !option.groupDisabled && option.visible) {
+            this.hoverIndex = i
+            break
+          }
+        } else {
+          // highlight currently selected option
+          if (option.itemSelected) {
+            this.hoverIndex = i
+            break
+          }
+        }
       }
     },
 
@@ -410,7 +822,54 @@ export default {
 
   created () {
     this.cachedPlaceHolder = this.currentPlaceholder = this.placeholder
+    if (this.multiple && !Array.isArray(this.value)) {
+      this.$emit('input', [])
+    }
+    if (!this.multiple && Array.isArray(this.value)) {
+      this.$emit('input', '')
+    }
+
+    this.debouncedOnInputChange = debounce(this.debounce, () => {
+      this.onInputChange()
+    })
+
+    this.debouncedQueryChange = debounce(this.debounce, (e) => {
+      this.handleQueryChange(e.target.value)
+    })
+
     this.$on('handleOptionClick', this.handleOptionSelect)
+    this.$on('setSelected', this.setSelected)
+  },
+
+  mounted () {
+    if (this.multiple && Array.isArray(this.value) && this.value.length > 0) {
+      this.currentPlaceholder = ''
+    }
+    addResizeListener(this.$el, this.handleResize)
+
+    const reference = this.$refs.reference
+    if (reference && reference.$el) {
+      const sizeMap = {
+        medium: 36,
+        small: 32,
+        mini: 28
+      }
+      const input = reference.$el.querySelector('input')
+      this.initialInputHeight = input.getBoundingClientRect().height || sizeMap[this.selectSize]
+    }
+    if (this.remote && this.multiple) {
+      this.resetInputHeight()
+    }
+    this.$nextTick(() => {
+      if (reference && reference.$el) {
+        this.inputWidth = reference.$el.getBoundingClientRect().width
+      }
+    })
+    this.setSelected()
+  },
+
+  beforeDestroy () {
+    if (this.$el && this.handleResize) removeResizeListener(this.$el, this.handleResize)
   }
 }
 </script>

@@ -15,6 +15,7 @@ import Autocomplete from './Autocomplete/Autocomplete.vue'
 import InputNumber from './InputNumber/InputNumber.vue'
 import Select from './Select/Select.vue'
 import Option from './Select/Option.vue'
+import OptionGroup from './Select/OptionGroup.vue'
 
 import Menu from './Menu/Menu.vue'
 import MenuItem from './Menu/MenuItem.vue'
@@ -45,6 +46,7 @@ const components = [
   InputNumber,
   Select,
   Option,
+  OptionGroup,
   Table,
   TableColumn,
   Tag,
