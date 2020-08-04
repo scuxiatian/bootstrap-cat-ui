@@ -81,6 +81,15 @@ const subRoutes = [
     }
   },
   {
+    path: 'cascader',
+    name: 'CascaderApi',
+    component: () => import('@/views/CascaderApi'),
+    meta: {
+      title: 'Cascader 级联选择器',
+      group: 1
+    }
+  },
+  {
     path: 'table',
     name: 'TableApi',
     component: () => import('@/views/TableApi'),

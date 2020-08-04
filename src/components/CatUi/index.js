@@ -16,15 +16,17 @@ import InputNumber from './InputNumber/InputNumber.vue'
 import Select from './Select/Select.vue'
 import Option from './Select/Option.vue'
 import OptionGroup from './Select/OptionGroup.vue'
+import Cascader from './Cascader/Cascader.vue'
+import CascaderPanel from './Cascader/CascaderPanel.vue'
+
+import Table from './Table/Table.vue'
+import TableColumn from './Table/TableColumn.vue'
+import Tag from './Tag/Tag.vue'
 
 import Menu from './Menu/Menu.vue'
 import MenuItem from './Menu/MenuItem.vue'
 import Submenu from './Menu/Submenu.vue'
 import MenuItemGroup from './Menu/MenuItemGroup'
-
-import Table from './Table/Table.vue'
-import TableColumn from './Table/TableColumn.vue'
-import Tag from './Tag/Tag.vue'
 
 import Tooltip from './Tooltip/Tooltip'
 import Popover from './Popover'
@@ -47,6 +49,8 @@ const components = [
   Select,
   Option,
   OptionGroup,
+  Cascader,
+  CascaderPanel,
   Table,
   TableColumn,
   Tag,
