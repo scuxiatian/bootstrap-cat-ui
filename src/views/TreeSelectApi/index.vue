@@ -21,6 +21,11 @@
     <show-box :config="filterableConfig">
       <tree-select-filterable></tree-select-filterable>
     </show-box>
+
+    <show-table title="TreeSelect" :data="attributes"></show-table>
+    <show-table title="" type="props" :data="props"></show-table>
+    <show-table title="TreeSelect" type="events" :data="events"></show-table>
+    <show-table title="TreeSelect" type="vSlots" :data="vslots"></show-table>
   </view-page>
 </template>
 
@@ -90,45 +95,37 @@ export default {
         codeDesc: '为cat-tree-select添加filterable属性即可启用搜索功能。需要通过传入一个filter-node-method来实现。filter-node-method为一个Function，它会在输入值发生变化时调用，参数为当前输入值与节点data值。'
       },
       attributes: [
-        ['value / v-model', '绑定值', '', '', ''],
-        ['multiple', '', '', '', ''],
-        ['disabled', '', '', '', ''],
-        ['size', '', '', '', ''],
-        ['clearable', '', '', '', ''],
-        ['collapse-tags', '', '', '', ''],
-        ['name', '', '', '', ''],
-        ['placeholder', '', '', '', ''],
-        ['filterable', '', '', '', ''],
-        ['placement: : ', '', '', '', ''],
-        ['props: ', '', '', '', '']
+        ['value / v-model', '绑定值', 'boolean / string / number', '—', '—'],
+        ['multiple', '是否多选', 'boolean', '—', 'false'],
+        ['disabled', '是否禁用', 'boolean', '—', 'false'],
+        ['size', '输入框尺寸', 'string', 'medium/small/mini', '—'],
+        ['clearable', '是否可以清空选项', 'boolean', '—', 'false'],
+        ['collapse-tags', '多选时是否将选中值按文字的形式展示', 'boolean', '—', 'false'],
+        ['name', 'tree-select input 的 name 属性', 'string', '—', '—'],
+        ['placeholder', '占位符', 'string', '—', '请选择'],
+        ['filterable', '是否可搜索', 'boolean', '—', 'false'],
+        ['placement', '弹出框出现位置', 'String', 'top/top-start/top-end/bottom/bottom-start/bottom-end/left/left-start/left-end/right/right-start/right-end', 'bottom'],
+        ['props', '配置选项，具体看下表', 'object', '—', '—'],
+        ['el-tree attributes', '参考element-ui官网 el-tree attributes', '—', '—', '—']
       ],
       props: [
-        ['', '', '', '', ''],
-        ['', '', '', '', ''],
-        ['', '', '', '', ''],
-        ['', '', '', '', ''],
-        ['', '', '', '', '']
-      ],
-      methods: [
-        ['', '', ''],
-        ['', '', ''],
-        ['', '', ''],
-        ['', '', ''],
-        ['', '', '']
+        ['key', '指定节点值为节点对象的某个属性值（必填）', 'string / number', '—', '—'],
+        ['label', '指定节点标签为节点对象的某个属性值', 'string, function(data, node)', '—', '—'],
+        ['children', '指定子树为节点对象的某个属性值', 'string', '—', '—'],
+        ['disabled', '指定节点选择框是否禁用为节点对象的某个属性值', 'boolean, function(data, node)', '—', '—'],
+        ['isLeaf', '指定节点是否为叶子节点，仅在指定了 lazy 属性的情况下生效', 'boolean, function(data, node)', '—', '—']
       ],
       events: [
-        ['', '', ''],
-        ['', '', ''],
-        ['', '', ''],
-        ['', '', ''],
-        ['', '', '']
+        ['change', '选中值发生变化时触发', '目前的选中值'],
+        ['visible-change', '下拉框出现/隐藏时触发', '出现则为 true，隐藏则为 false'],
+        ['remove-tag', '多选模式下移除tag时触发', '移除的tag值'],
+        ['clear', '可清空的单选模式下用户点击清空按钮时触发', '—'],
+        ['blur', '当 input 失去焦点时触发', '(event: Event)'],
+        ['focus', '当 input 获得焦点时触发', '(event: Event)'],
+        ['el-tree events', '参考element-ui官网 el-tree events', '—']
       ],
-      slots: [
-        ['', ''],
-        ['', ''],
-        ['', ''],
-        ['', ''],
-        ['', '']
+      vslots: [
+        ['-', '自定义备选项的节点内容，参数为 { node, data }，分别为当前节点的 Node 对象和数据']
       ]
     }
   }

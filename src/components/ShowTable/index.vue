@@ -49,6 +49,10 @@ export default {
           title: 'Scoped Slot',
           heads: ['name', '说明']
         },
+        vSlots: {
+          title: 'V-Slot',
+          heads: ['name', '说明']
+        },
         props: {
           title: 'Props',
           heads: ['参数', '说明', '类型', '可选值', '默认值']
