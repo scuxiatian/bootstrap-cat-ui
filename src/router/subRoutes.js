@@ -81,6 +81,15 @@ const subRoutes = [
     }
   },
   {
+    path: 'treeSelect',
+    name: 'TreeSelectApi',
+    component: () => import('@/views/TreeSelectApi'),
+    meta: {
+      title: 'TreeSelec 树选择器',
+      group: 1
+    }
+  },
+  {
     path: 'cascader',
     name: 'CascaderApi',
     component: () => import('@/views/CascaderApi'),

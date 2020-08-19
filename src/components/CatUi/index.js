@@ -14,6 +14,7 @@ import Input from './Input/Input.vue'
 import Autocomplete from './Autocomplete/Autocomplete.vue'
 import InputNumber from './InputNumber/InputNumber.vue'
 import Select from './Select/Select.vue'
+import TreeSelect from './TreeSelect/TreeSelect.vue'
 import Option from './Select/Option.vue'
 import OptionGroup from './Select/OptionGroup.vue'
 import Cascader from './Cascader/Cascader.vue'
@@ -47,6 +48,7 @@ const components = [
   Autocomplete,
   InputNumber,
   Select,
+  TreeSelect,
   Option,
   OptionGroup,
   Cascader,

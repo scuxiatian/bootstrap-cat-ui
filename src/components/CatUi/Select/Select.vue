@@ -15,7 +15,7 @@
           :size="collapseTagSize"
           :hit="selected[0].hitState"
           type="info"
-          @close="deleteTag($event, item)"
+          @close="deleteTag($event, selected[0])"
           disable-transitions>
           <span class="cat-select__tags-text">{{ selected[0].currentLabel }}</span>
         </cat-tag>
