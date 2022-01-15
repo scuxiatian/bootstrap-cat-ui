@@ -13,7 +13,7 @@
     "core-js": "^3.6.4",
     "element-ui": "^2.13.2",
     "font-awesome": "^4.7.0",
-    "marked": "^1.1.0",
+    "marked": "^4.0.10",
     "resize-observer-polyfill": "^1.5.1",
     "throttle-debounce": "^2.1.0",
     "vue": "^2.6.11",
